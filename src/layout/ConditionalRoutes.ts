@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { HiUsers } from "react-icons/hi2";
 import { RiStethoscopeFill } from "react-icons/ri";
 import { IoTicket } from "react-icons/io5";
+import { FaCircleUser } from "react-icons/fa6";
 
 type SubItem = {
   title: string;
@@ -23,6 +24,11 @@ const ConditionalRoutes = (): NavItem[] => {
 
   const navItems: NavItem[] = [
     { title: "Dashboard", url: "/", icon: TbLayoutDashboardFilled },
+    {
+      title: "Profile",
+      url: "/profile",
+      icon: FaCircleUser,
+    },
     {
       title: "Doctors",
       url: "/doctors",

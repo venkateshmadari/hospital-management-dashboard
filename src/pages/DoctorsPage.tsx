@@ -18,13 +18,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-import { MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react";
+import { MoreHorizontal, Eye, Trash2 } from "lucide-react";
+import { MdEdit } from "react-icons/md";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { DoctorsType } from "@/types/all-doctor";
 import toast from "react-hot-toast";
 import TableSkeleton from "@/components/TableSkeleton";
 import ErrorBlock from "@/components/ErrorBlock";
 import PaginationComponent from "@/components/PaginationComponent";
+import { Link } from "react-router-dom";
+import { capitalizeFirstLetter } from "@/lib/capitalizeFirstLetter";
+import { formatCamelCase } from "@/lib/formatCamelCase";
 
 interface DoctorsPageProps {
   doctors: DoctorsType[];
@@ -54,7 +58,6 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
       day: "numeric",
     });
 
-  // derived booleans
   const allSelected = useMemo(
     () => doctors.length > 0 && selectedDoctors.length === doctors.length,
     [doctors.length, selectedDoctors.length]
@@ -127,7 +130,7 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
                     />
                   </TableHead>
                   <TableHead className="min-w-[200px] uppercase">
-                    Doctor
+                    Details
                   </TableHead>
                   <TableHead className="min-w-[150px] uppercase">
                     Designation
@@ -174,12 +177,14 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
                             src={doctor.image || undefined}
                             alt={doctor.name}
                           />
-                          <AvatarFallback className="text-xs">
+                          <AvatarFallback className="text-xs uppercase">
                             {doctor.name?.slice(0, 1) ?? "?"}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
-                          <span className="font-medium">{doctor.name}</span>
+                          <span className="font-medium">
+                            {capitalizeFirstLetter(doctor.name)}
+                          </span>
                           <span className="text-sm text-muted-foreground">
                             {doctor.email}
                           </span>
@@ -192,7 +197,7 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
                     </TableCell>
 
                     <TableCell className="text-muted-foreground">
-                      {doctor.speciality || "-"}
+                      {formatCamelCase(doctor.speciality) || "-"}
                     </TableCell>
 
                     <TableCell>
@@ -212,30 +217,35 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
                     <TableCell className="sticky right-0 bg-background z-10">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
+                          <Button
+                            variant="ghost"
+                            className="h-8 w-8 p-0 cursor-pointer"
+                          >
                             <span className="sr-only">Open menu</span>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
 
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => console.log("View", doctor)}
-                          >
-                            <Eye className="mr-2 h-4 w-4" /> View
-                          </DropdownMenuItem>
+                          <Link to={`/doctors/${doctor?.id}`}>
+                            <DropdownMenuItem className="cursor-pointer">
+                              <Eye className="mr-2 h-4 w-4" /> View
+                            </DropdownMenuItem>
+                          </Link>
 
                           <DropdownMenuItem
                             onClick={() => console.log("Edit", doctor)}
+                            className="cursor-pointer"
                           >
-                            <Edit className="mr-2 h-4 w-4" /> Edit
+                            <MdEdit className="mr-2 h-4 w-4" /> Edit
                           </DropdownMenuItem>
 
                           <DropdownMenuItem
                             onClick={() => handleDeleteSingle(doctor.id)}
-                            className="text-red-600"
+                            className="text-red-600 cursor-pointer font-medium"
                           >
-                            <Trash2 className="mr-2 h-4 w-4" /> Delete
+                            <Trash2 className="mr-2 h-4 w-4 text-red-600 " />{" "}
+                            Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

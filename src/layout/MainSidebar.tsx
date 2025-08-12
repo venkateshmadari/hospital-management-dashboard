@@ -261,7 +261,7 @@ const MainSidebar: React.FC<SidebarProps> = ({ children }) => {
         </AnimatePresence>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden dark:bg-[#242424] bg-[#e9ecef]">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden dark:bg-muted/50 bg-[#e9ecef]">
           <div className="min-w-0 w-full xl:p-4 3xl:p-6 p-2">{children}</div>
         </main>
 

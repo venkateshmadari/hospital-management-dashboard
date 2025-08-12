@@ -15,6 +15,8 @@ type User = {
   id: number;
   email: string;
   role: string;
+  image: any;
+  name: any;
 };
 
 interface AuthContextType {
@@ -32,6 +34,7 @@ interface AuthContextType {
   }) => Promise<AxiosResponse<any>>;
   logout: () => void;
   getUserData: () => Promise<void>;
+  updateProfileImage: any;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -128,6 +131,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const updateProfileImage = async (file: File) => {
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await axiosInstance.post(
+        `/admin/doctors/${user?.id}/upload-image`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setUser((prevUser: any) => ({
+          ...prevUser,
+          image: response.data.data.image,
+        }));
+        return response;
+      }
+    } catch (error: any) {
+      console.error("Error updating profile image:", error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message;
+      throw errorMessage;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = useCallback(() => {
     localStorage.removeItem("token");
     setUser(null);
@@ -152,8 +191,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       logout,
       getUserData,
       registerUser,
+      updateProfileImage,
     }),
-    [user, role, loading, login, logout, getUserData, registerUser]
+    [
+      user,
+      role,
+      loading,
+      login,
+      logout,
+      getUserData,
+      registerUser,
+      updateProfileImage,
+    ]
   );
 
   return (

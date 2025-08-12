@@ -6,6 +6,13 @@ import DoctorFilters from "@/pages/filters/DoctorFilters";
 import DoctorsPage from "@/pages/DoctorsPage";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import PaginationComponent from "@/components/PaginationComponent";
+import {
+  RiStethoscopeFill,
+  RiUserHeartFill,
+  RiUserUnfollowFill,
+} from "react-icons/ri";
+import DoctorStatsCards from "@/stats/DoctorStatsCards";
+import useFetchData from "@/hooks/useFetchData";
 
 interface PaginationState {
   currentPage: number;
@@ -33,6 +40,7 @@ const FetchAllDoctors: React.FC = () => {
   const searchQuery = searchParams.get("search") || "";
   const statusFilter = searchParams.get("status") || "";
   const specialityFilter = searchParams.get("speciality") || "";
+  const { data } = useFetchData("/admin/doctors/stats");
 
   const getDoctors = useCallback(async () => {
     setLoading(true);
@@ -106,9 +114,41 @@ const FetchAllDoctors: React.FC = () => {
     { id: 2, name: "Active", value: "ACTIVE" },
     { id: 3, name: "Inactive", value: "INACTIVE" },
   ];
+  const stats = [
+    {
+      icon: <RiStethoscopeFill />,
+      count: data?.totalDoctors,
+      text: "Total doctors",
+      color: "bg-emerald-500",
+    },
+    {
+      icon: <RiUserHeartFill />,
+      count: data?.activeDoctors,
+      text: "Active doctors",
+      color: "bg-cyan-500",
+    },
+    {
+      icon: <RiUserUnfollowFill />,
+      count: data?.inActiveDoctors,
+      text: "Inactive doctors",
+      color: "bg-violet-500",
+    },
+  ];
 
+  console.log(data, "heyyy");
   return (
     <div className="flex flex-col">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+        {stats.map((stat, index) => (
+          <DoctorStatsCards
+            key={index}
+            icon={stat.icon}
+            count={stat.count}
+            text={stat.text}
+            color={stat.color}
+          />
+        ))}
+      </div>
       <DoctorFilters
         statusFilter={statusFilter}
         handleFilter={handleFilter}

@@ -9,6 +9,8 @@ import RegisterPage from "@/pages/auth/RegisterPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PatientsPage from "@/pages/PatientsPage";
 import FetchAllDoctors from "@/containers/FetchAllDoctors";
+import SingleDoctorFetch from "@/containers/SingleDoctorFetch";
+import FetchProfile from "@/containers/FetchProfile";
 
 const AdminRoutes = () => {
   return (
@@ -23,7 +25,9 @@ const AdminRoutes = () => {
 
         <Route element={<PrivateRoutes />}>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/profile" element={<FetchProfile />} />
           <Route path="/doctors" element={<FetchAllDoctors />} />
+          <Route path="/doctors/:id" element={<SingleDoctorFetch />} />
           <Route path="/patients" element={<PatientsPage />} />
         </Route>
 
