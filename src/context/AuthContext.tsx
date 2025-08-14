@@ -10,6 +10,7 @@ import React, {
 import Preloader from "@/components/loaders/Preloader";
 import axiosInstance from "@/instance/instance";
 import { AxiosResponse } from "axios";
+import { doctorAvailability } from "@/types/single-doctor";
 
 type User = {
   id: number;
@@ -17,6 +18,11 @@ type User = {
   role: string;
   image: any;
   name: any;
+  designation?: string;
+  speciality?: string;
+  description?: string;
+  createdAt: string;
+  Avability: doctorAvailability[];
 };
 
 interface AuthContextType {
@@ -34,6 +40,12 @@ interface AuthContextType {
   }) => Promise<AxiosResponse<any>>;
   logout: () => void;
   getUserData: () => Promise<void>;
+  updatedProfileData: (credentials: {
+    name: string;
+    designation?: string;
+    speciality?: string;
+    description?: string;
+  }) => void;
   updateProfileImage: any;
 }
 
@@ -167,6 +179,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const updatedProfileData = async ({
+    name,
+    designation,
+    speciality,
+    description,
+  }: {
+    name: string;
+    designation?: string;
+    speciality?: string;
+    description?: string;
+  }) => {
+    try {
+      setLoading(true);
+
+      const response = await axiosInstance.post(`/admin/doctors/${user?.id}`, {
+        name,
+        designation,
+        speciality,
+        description,
+      });
+
+      if (response.status === 200) {
+        setUser((prevUser: any) => ({
+          ...prevUser,
+          image: response.data.data.image,
+        }));
+        return response;
+      }
+    } catch (error: any) {
+      console.error("Error updating profile image:", error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message;
+      throw errorMessage;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = useCallback(() => {
     localStorage.removeItem("token");
     setUser(null);
@@ -192,6 +244,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       getUserData,
       registerUser,
       updateProfileImage,
+      updatedProfileData,
     }),
     [
       user,
@@ -202,6 +255,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       getUserData,
       registerUser,
       updateProfileImage,
+      updatedProfileData,
     ]
   );
 

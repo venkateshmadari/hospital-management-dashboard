@@ -1,14 +1,24 @@
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { doctorAvailability } from "@/types/single-doctor";
 
-const DoctorAvailbility = ({ data }: { data: doctorAvailability[] }) => {
+const DoctorAvailbility = ({
+  data,
+  heading,
+  subheading,
+}: {
+  data: doctorAvailability[];
+  heading?: string;
+  subheading?: string;
+}) => {
   const days = data?.map((availability) => availability.day);
   return (
-    <Card className="bg-background rounded-3xl">
+    <Card className="bg-background rounded-3xl h-full">
       <CardHeader>
-        <h1 className="text-xl font-light">Driver avability</h1>
-        <p className="text-sm text-muted-foreground">
-          Detailed view of doctor shifts with timing
+        <h1 className="text-xl font-light text-title">
+          {heading || "Doctor avability"}
+        </h1>
+        <p className="text-sm text-muted-foreground -mt-1">
+          {subheading || "Detailed view of doctor shifts with timing"}
         </p>
       </CardHeader>
       <CardContent>
