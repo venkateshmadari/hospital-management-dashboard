@@ -5,6 +5,7 @@ const DoctorStatsCards = ({
   count,
   text,
   color,
+  
 }: {
   icon: any;
   count: number;

@@ -35,9 +35,7 @@ const PersonalInformation = ({ data }: { data: SingleDoctorTypes }) => {
               <p className="text-sm text-muted-foreground flex items-center gap-2">
                 Description
               </p>
-              <p className="text-sm truncate line-clamp-2">
-                {formatCamelCase(data?.description)}
-              </p>
+              <p className="text-sm line-clamp-4">{data?.description}</p>
             </div>
           )}
         </div>

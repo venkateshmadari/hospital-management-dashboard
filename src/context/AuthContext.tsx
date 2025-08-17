@@ -27,6 +27,7 @@ type User = {
 
 interface AuthContextType {
   user: User | null;
+  setUser: any;
   role: string | null;
   loading: boolean;
   login: (credentials: { email: string; password: string }) => Promise<void>;
@@ -191,9 +192,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     description?: string;
   }) => {
     try {
-      setLoading(true);
-
-      const response = await axiosInstance.post(`/admin/doctors/${user?.id}`, {
+      console.log(user?.id, {
+        name,
+        designation,
+        speciality,
+        description,
+      });
+      const response = await axiosInstance.put(`/admin/doctors/${user?.id}`, {
         name,
         designation,
         speciality,
@@ -203,7 +208,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (response.status === 200) {
         setUser((prevUser: any) => ({
           ...prevUser,
-          image: response.data.data.image,
+          name,
+          designation,
+          speciality,
+          description,
         }));
         return response;
       }
@@ -214,8 +222,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         error?.response?.data?.error ||
         error?.message;
       throw errorMessage;
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -237,6 +243,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const value = useMemo(
     () => ({
       user,
+      setUser,
       role,
       loading,
       login,
@@ -248,6 +255,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }),
     [
       user,
+      setUser,
       role,
       loading,
       login,

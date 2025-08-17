@@ -1,5 +1,4 @@
-import React, { useMemo, useState } from "react";
-import axiosInstance from "@/instance/instance";
+import React, { useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -22,89 +21,57 @@ import { MoreHorizontal, Eye, Trash2 } from "lucide-react";
 import { MdEdit } from "react-icons/md";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { DoctorsType } from "@/types/all-doctor";
-import toast from "react-hot-toast";
 import TableSkeleton from "@/components/TableSkeleton";
 import ErrorBlock from "@/components/ErrorBlock";
 import PaginationComponent from "@/components/PaginationComponent";
 import { Link } from "react-router-dom";
 import { capitalizeFirstLetter } from "@/lib/capitalizeFirstLetter";
 import { formatCamelCase } from "@/lib/formatCamelCase";
+import formatDate from "@/lib/formatDate";
 
 interface DoctorsPageProps {
   doctors: DoctorsType[];
-  onRefresh?: any;
   loading: boolean;
   error: string | null;
   currentPage: number;
   totalPages: number;
-  onPageChange: any;
+  onPageChange: (page: number) => void;
+  selectedDoctors: string[];
+  setSelectedDoctors: React.Dispatch<React.SetStateAction<string[]>>;
+  handleDeleteSingle: (id: string) => void;
+  handleDeleteSelected: () => void;
 }
 
 const DoctorsPage: React.FC<DoctorsPageProps> = ({
   doctors,
-  onRefresh,
   loading,
   error,
   currentPage,
   totalPages,
   onPageChange,
+  selectedDoctors = [],
+  setSelectedDoctors,
+  handleDeleteSingle,
+  handleDeleteSelected,
 }) => {
-  const [selectedDoctors, setSelectedDoctors] = useState<number[]>([]);
-
-  const formatDate = (dateString: string) =>
-    new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-
   const allSelected = useMemo(
-    () => doctors.length > 0 && selectedDoctors.length === doctors.length,
-    [doctors.length, selectedDoctors.length]
+    () => doctors?.length > 0 && selectedDoctors?.length === doctors?.length,
+    [doctors?.length, selectedDoctors?.length]
   );
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedDoctors(doctors.map((doc: any) => doc.id));
+      setSelectedDoctors(doctors.map((doc) => doc.id));
     } else {
       setSelectedDoctors([]);
     }
   };
 
-  const handleSelectDoctor = (id: number, checked: boolean) => {
+  const handleSelectDoctor = (id: string, checked: boolean) => {
     if (checked) {
-      setSelectedDoctors((prev) => (prev.includes(id) ? prev : [...prev, id]));
+      setSelectedDoctors((prev) => [...prev, id]);
     } else {
       setSelectedDoctors((prev) => prev.filter((docId) => docId !== id));
-    }
-  };
-
-  const handleDeleteSelected = async () => {
-    if (selectedDoctors.length === 0) return;
-    console.log(selectedDoctors);
-    try {
-      await axiosInstance.delete("/admin/doctors", {
-        data: { ids: selectedDoctors },
-      });
-
-      toast.success("Selected doctors deleted successfully");
-      setSelectedDoctors([]);
-      onRefresh();
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || error?.message || "Failed to delete"
-      );
-    }
-  };
-
-  const handleDeleteSingle = async (id: number) => {
-    try {
-      await axiosInstance.delete("/admin/doctors", { data: { ids: [id] } });
-      toast.success("Doctor deleted");
-      setSelectedDoctors((prev) => prev.filter((x) => x !== id));
-      onRefresh();
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete");
     }
   };
 

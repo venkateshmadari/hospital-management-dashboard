@@ -13,6 +13,8 @@ import {
 } from "react-icons/ri";
 import DoctorStatsCards from "@/stats/DoctorStatsCards";
 import useFetchData from "@/hooks/useFetchData";
+import DeleteModal from "@/components/modals/DeleteModal";
+import toast from "react-hot-toast";
 
 interface PaginationState {
   currentPage: number;
@@ -24,9 +26,22 @@ interface PaginationState {
 }
 
 const FetchAllDoctors: React.FC = () => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [isError, setIsError] = useState<string | null>(null);
+  const [loading, setLoading] = useState({
+    fetch: false,
+    edit: false,
+    delete: false,
+  });
+  const [isError, setIsError] = useState({
+    fetch: null as string | null,
+    edit: null as string | null,
+    delete: null as string | null,
+  });
   const [doctors, setDoctors] = useState<DoctorsType[]>([]);
+  const [selectedDoctors, setSelectedDoctors] = useState<string[]>([]);
+  const [toggleModal, setToggleModal] = useState({
+    delete: false,
+    edit: false,
+  });
   const [pagination, setPagination] = useState<PaginationState>({
     currentPage: 1,
     totalPages: 1,
@@ -43,8 +58,8 @@ const FetchAllDoctors: React.FC = () => {
   const { data } = useFetchData("/admin/doctors/stats");
 
   const getDoctors = useCallback(async () => {
-    setLoading(true);
-    setIsError(null);
+    setLoading((prev) => ({ ...prev, fetch: true }));
+    setIsError((prev) => ({ ...prev, fetch: null }));
     try {
       const queryParams = new URLSearchParams({
         limit: pagination.itemsPerPage.toString(),
@@ -68,7 +83,7 @@ const FetchAllDoctors: React.FC = () => {
           hasPreviousPage: response.data?.pagination?.hasPreviousPage || false,
         }));
       } else {
-        setIsError("Failed to fetch doctors");
+        setIsError((prev) => ({ ...prev, fetch: "Failed to fetch doctors" }));
       }
     } catch (error: any) {
       const errorMessage =
@@ -76,9 +91,9 @@ const FetchAllDoctors: React.FC = () => {
         error?.response?.data?.error ||
         error?.message ||
         "Unknown error";
-      setIsError(errorMessage);
+      setIsError((prev) => ({ ...prev, fetch: errorMessage }));
     } finally {
-      setLoading(false);
+      setLoading((prev) => ({ ...prev, fetch: false }));
     }
   }, [
     searchQuery,
@@ -114,6 +129,7 @@ const FetchAllDoctors: React.FC = () => {
     { id: 2, name: "Active", value: "ACTIVE" },
     { id: 3, name: "Inactive", value: "INACTIVE" },
   ];
+
   const stats = [
     {
       icon: <RiStethoscopeFill />,
@@ -135,7 +151,63 @@ const FetchAllDoctors: React.FC = () => {
     },
   ];
 
-  console.log(data, "heyyy");
+  const handleDeleteSingle = (id: string) => {
+    setSelectedDoctors([id]);
+    setToggleModal((prev) => ({ ...prev, delete: true }));
+  };
+
+  const handleDeleteSelected = () => {
+    if (selectedDoctors.length === 0) {
+      toast.error("No doctors selected");
+      return;
+    }
+    setToggleModal((prev) => ({ ...prev, delete: true }));
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedDoctors.length === 0) return;
+
+    setLoading((prev) => ({ ...prev, delete: true }));
+    setIsError((prev) => ({ ...prev, delete: null }));
+
+    try {
+      const response = await axiosInstance.delete("/admin/doctors", {
+        data: { doctorIds: selectedDoctors },
+      });
+
+      if (response.status === 200) {
+        toast.success(response.data.message);
+        setToggleModal((prev) => ({ ...prev, delete: false }));
+        setDoctors((prev) =>
+          prev.filter((doctor) => !selectedDoctors.includes(doctor.id))
+        );
+        setPagination((prev) => ({
+          ...prev,
+          totalItems: prev.totalItems - selectedDoctors.length,
+          totalPages: Math.ceil(
+            (prev.totalItems - selectedDoctors.length) / prev.itemsPerPage
+          ),
+        }));
+        setSelectedDoctors([]);
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        "Failed to delete doctors";
+      setIsError((prev) => ({ ...prev, delete: errorMessage }));
+      toast.error(errorMessage);
+    } finally {
+      setLoading((prev) => ({ ...prev, delete: false }));
+    }
+  };
+
+  const handleCloseDeleteModal = () => {
+    setToggleModal((prev) => ({ ...prev, delete: false }));
+    setIsError((prev) => ({ ...prev, delete: null }));
+  };
+
   return (
     <div className="flex flex-col">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
@@ -155,16 +227,29 @@ const FetchAllDoctors: React.FC = () => {
         statusOptions={filterOptions}
         specialityFilter={specialityFilter}
       />
-      {loading ? (
+      {loading.fetch ? (
         <Preloader />
       ) : (
         <DoctorsPage
           doctors={doctors}
-          loading={loading}
-          error={isError}
+          loading={loading.fetch}
+          error={isError.fetch}
           currentPage={pagination.currentPage}
           totalPages={pagination.totalPages}
           onPageChange={handlePageChange}
+          selectedDoctors={selectedDoctors}
+          setSelectedDoctors={setSelectedDoctors}
+          handleDeleteSingle={handleDeleteSingle}
+          handleDeleteSelected={handleDeleteSelected}
+        />
+      )}
+      {toggleModal.delete && (
+        <DeleteModal
+          open={toggleModal.delete}
+          onOpenChange={handleCloseDeleteModal}
+          onConfirm={handleConfirmDelete}
+          error={isError.delete}
+          DeleteLoading={loading.delete}
         />
       )}
     </div>
