@@ -35,6 +35,10 @@ const PatientsPage = ({
   currentPage,
   totalPages,
   onPageChange,
+  selectedPatients,
+  setSelectedPatients,
+  handleDeleteSingle,
+  handleDeleteSelected,
 }: {
   loading: boolean;
   error: string | null;
@@ -42,9 +46,11 @@ const PatientsPage = ({
   currentPage: number;
   totalPages: number;
   onPageChange: any;
+  selectedPatients: string[];
+  setSelectedPatients: React.Dispatch<React.SetStateAction<string[]>>;
+  handleDeleteSingle: (id: string) => void;
+  handleDeleteSelected: () => void;
 }) => {
-  const [selectedPatients, setSelectedPatients] = useState<string[]>([]);
-
   const allSelected = useMemo(
     () => patients.length > 0 && selectedPatients.length === patients.length,
     [patients.length, selectedPatients.length]
@@ -58,30 +64,14 @@ const PatientsPage = ({
     }
   };
 
-  const handleDeleteSelected = () => {
-    if (selectedPatients.length === 0) return;
-
-    try {
-    } catch (error: any) {
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.error ||
-        error?.message;
-      toast.error(errorMessage);
-    }
-  };
-
   const handleSelectPatient = (id: string, checked: boolean) => {
     if (checked) {
-      setSelectedPatients((prev) => (prev.includes(id) ? prev : [...prev, id]));
+      setSelectedPatients((prev) => [...prev, id]);
     } else {
-      setSelectedPatients((prev) => prev.filter((patId) => patId !== id));
+      setSelectedPatients((prev) => prev.filter((docId) => docId !== id));
     }
   };
 
-  const handleDeleteSingle = (id: string) => {
-    console.log(id);
-  };
   return (
     <Card className="w-full space-y-4 bg-background">
       <CardContent>
@@ -153,9 +143,6 @@ const PatientsPage = ({
                           <span className="font-medium">
                             {capitalizeFirstLetter(patient.name)}
                           </span>
-                          <span className="text-sm text-muted-foreground">
-                            {patient.email}
-                          </span>
                         </div>
                       </div>
                     </TableCell>
@@ -181,19 +168,11 @@ const PatientsPage = ({
                         </DropdownMenuTrigger>
 
                         <DropdownMenuContent align="end">
-                          <Link to={`/doctors/${patient?.id}`}>
+                          <Link to={`/patients/${patient?.id}`}>
                             <DropdownMenuItem className="cursor-pointer">
                               <Eye className="mr-2 h-4 w-4" /> View
                             </DropdownMenuItem>
                           </Link>
-
-                          <DropdownMenuItem
-                            onClick={() => console.log("Edit", patient)}
-                            className="cursor-pointer"
-                          >
-                            <MdEdit className="mr-2 h-4 w-4" /> Edit
-                          </DropdownMenuItem>
-
                           <DropdownMenuItem
                             onClick={() => handleDeleteSingle(patient.id)}
                             className="text-red-600 cursor-pointer font-medium"

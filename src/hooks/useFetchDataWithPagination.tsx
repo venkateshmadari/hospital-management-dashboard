@@ -19,6 +19,7 @@ const useFetchDataWithPagination = (url: string | undefined) => {
     try {
       let query = `&page=${pagination.currentPage}&limit=${pagination.itemsPerPage}`;
       const res = await axiosInstance.get(`${url}?${query}`);
+      console.log(res);
       if (res.status === 200) {
         setData(res.data.data);
         setTotalCount(res.data.pagination.totalCount);

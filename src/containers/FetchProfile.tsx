@@ -308,7 +308,7 @@ const FetchProfile = () => {
               alt={user?.name}
               className="object-cover"
             />
-            <AvatarFallback className="text-3xl select-none">
+            <AvatarFallback className="text-3xl select-none uppercase dark:bg-primary/20 bg-primary/5 border border-primary text-title">
               {user?.name?.slice(0, 1)}
             </AvatarFallback>
           </Avatar>

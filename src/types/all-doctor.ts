@@ -1,11 +1,11 @@
 export type DoctorsType = {
   createdAt: string;
-  designation: string;
+  designation?: string;
   email: string;
-  id: any;
+  id: string;
   image: string | null;
   name: string;
-  speciality: string;
+  speciality?: string;
   status: "ACTIVE" | "INACTIVE";
 };
 

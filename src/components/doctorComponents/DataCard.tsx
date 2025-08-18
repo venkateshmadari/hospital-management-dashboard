@@ -14,7 +14,7 @@ const DataCard = ({ data }: { data: SingleDoctorTypes }) => {
             alt={data?.name}
             className="object-cover"
           />
-          <AvatarFallback>{data?.name.slice(0, 1)}</AvatarFallback>
+          <AvatarFallback className="text-title uppercase">{data?.name.slice(0, 1)}</AvatarFallback>
         </Avatar>
         <div className="overflow-hidden inline-flex items-center justify-between w-full">
           <div className="">

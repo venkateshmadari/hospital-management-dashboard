@@ -40,6 +40,7 @@ interface DoctorsPageProps {
   setSelectedDoctors: React.Dispatch<React.SetStateAction<string[]>>;
   handleDeleteSingle: (id: string) => void;
   handleDeleteSelected: () => void;
+  handleEditDoctor: (data: DoctorsType) => void;
 }
 
 const DoctorsPage: React.FC<DoctorsPageProps> = ({
@@ -53,6 +54,7 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
   setSelectedDoctors,
   handleDeleteSingle,
   handleDeleteSelected,
+  handleEditDoctor,
 }) => {
   const allSelected = useMemo(
     () => doctors?.length > 0 && selectedDoctors?.length === doctors?.length,
@@ -74,7 +76,6 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
       setSelectedDoctors((prev) => prev.filter((docId) => docId !== id));
     }
   };
-
   return (
     <Card className="w-full space-y-4 bg-background">
       <CardContent>
@@ -143,6 +144,7 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
                           <AvatarImage
                             src={doctor.image || undefined}
                             alt={doctor.name}
+                            className="object-cover"
                           />
                           <AvatarFallback className="text-xs uppercase">
                             {doctor.name?.slice(0, 1) ?? "?"}
@@ -160,7 +162,7 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
                     </TableCell>
 
                     <TableCell className="text-muted-foreground">
-                      {doctor.designation}
+                      {doctor.designation || "-"}
                     </TableCell>
 
                     <TableCell className="text-muted-foreground">
@@ -201,7 +203,7 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
                           </Link>
 
                           <DropdownMenuItem
-                            onClick={() => console.log("Edit", doctor)}
+                            onClick={() => handleEditDoctor(doctor)}
                             className="cursor-pointer"
                           >
                             <MdEdit className="mr-2 h-4 w-4" /> Edit

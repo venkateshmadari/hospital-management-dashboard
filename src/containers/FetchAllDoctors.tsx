@@ -3,7 +3,6 @@ import axiosInstance from "@/instance/instance";
 import { DoctorsType } from "@/types/all-doctor";
 import Preloader from "@/components/loaders/Preloader";
 import DoctorFilters from "@/pages/filters/DoctorFilters";
-import DoctorsPage from "@/pages/DoctorsPage";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import PaginationComponent from "@/components/PaginationComponent";
 import {
@@ -15,6 +14,8 @@ import DoctorStatsCards from "@/stats/DoctorStatsCards";
 import useFetchData from "@/hooks/useFetchData";
 import DeleteModal from "@/components/modals/DeleteModal";
 import toast from "react-hot-toast";
+import DoctorStatusChangeModal from "@/components/modals/DoctorStatusChangeModal";
+import DoctorsPage from "@/pages/DoctorsPage";
 
 interface PaginationState {
   currentPage: number;
@@ -38,6 +39,8 @@ const FetchAllDoctors: React.FC = () => {
   });
   const [doctors, setDoctors] = useState<DoctorsType[]>([]);
   const [selectedDoctors, setSelectedDoctors] = useState<string[]>([]);
+  const [selectedEditDoctor, setSelectedEditDoctor] =
+    useState<DoctorsType | null>(null);
   const [toggleModal, setToggleModal] = useState({
     delete: false,
     edit: false,
@@ -208,6 +211,55 @@ const FetchAllDoctors: React.FC = () => {
     setIsError((prev) => ({ ...prev, delete: null }));
   };
 
+  const handleCloseEditModal = () => {
+    setToggleModal((prev) => ({ ...prev, edit: false }));
+    setIsError((prev) => ({ ...prev, edit: null }));
+  };
+  const handleEditDoctor = (data: DoctorsType) => {
+    setToggleModal((prev) => ({
+      ...prev,
+      edit: true,
+    }));
+    setSelectedEditDoctor(data);
+  };
+
+  const confirmEditChange = async (id: string, status: string) => {
+    console.log(id, status);
+    setLoading((prev) => ({ ...prev, edit: true }));
+    setIsError((prev) => ({ ...prev, edit: null }));
+    try {
+      const response = await axiosInstance.put(`/admin/doctors/status/${id}`, {
+        status,
+      });
+      console.log(response, "resssssssssss");
+      if (response.status === 200) {
+        setToggleModal((prev) => ({
+          ...prev,
+          edit: false,
+        }));
+        const updatedDoctor = response.data.data;
+        setDoctors((prev) =>
+          prev.map((doctor) =>
+            doctor.id === id
+              ? { ...doctor, status: updatedDoctor.status }
+              : doctor
+          )
+        );
+        toast.success(response?.data?.message);
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        "Unknown error";
+      setIsError((prev) => ({ ...prev, edit: errorMessage }));
+      toast.error(errorMessage);
+    } finally {
+      setLoading((prev) => ({ ...prev, edit: false }));
+    }
+  };
+
   return (
     <div className="flex flex-col">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
@@ -241,6 +293,7 @@ const FetchAllDoctors: React.FC = () => {
           setSelectedDoctors={setSelectedDoctors}
           handleDeleteSingle={handleDeleteSingle}
           handleDeleteSelected={handleDeleteSelected}
+          handleEditDoctor={handleEditDoctor}
         />
       )}
       {toggleModal.delete && (
@@ -252,6 +305,14 @@ const FetchAllDoctors: React.FC = () => {
           DeleteLoading={loading.delete}
         />
       )}
+      <DoctorStatusChangeModal
+        open={toggleModal.edit}
+        onOpenChange={handleCloseEditModal}
+        handleConfirm={confirmEditChange}
+        error={isError.edit}
+        isLoading={loading.edit}
+        selectedDoctor={selectedEditDoctor}
+      />
     </div>
   );
 };
