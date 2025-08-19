@@ -5,6 +5,7 @@ import useFetchDataWithPagination from "@/hooks/useFetchDataWithPagination";
 import axiosInstance from "@/instance/instance";
 import PatientsPage from "@/pages/PatientsPage";
 import DoctorStatsCards from "@/stats/DoctorStatsCards";
+import { PatientType } from "@/types/all-patients";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FaUserFriends } from "react-icons/fa";
@@ -42,15 +43,13 @@ const FetchAllPatients = () => {
     hasNextPage: false,
     hasPreviousPage: false,
   });
-  const [allPatients, setAllPatients] = useState<any[]>([]);
+  const [allPatients, setAllPatients] = useState<PatientType[]>([]);
   const [selectedPatients, setSelectedPatients] = useState<string[]>([]);
   const [toggleModal, setToggleModal] = useState<boolean>(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get("search") || "";
   const { data: patientStats } = useFetchData("/admin/patients/stats");
-
-  console.log(allPatients);
 
   const getPatients = useCallback(async () => {
     setIsLoading((prev) => ({
@@ -210,7 +209,6 @@ const FetchAllPatients = () => {
         handleDeleteSingle={handleDeleteSingle}
         handleDeleteSelected={handleDeleteSelected}
       />
-
       <DeleteModal
         open={toggleModal}
         onOpenChange={handleCloseDeleteModal}

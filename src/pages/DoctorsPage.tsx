@@ -226,7 +226,7 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
           </div>
         ) : (
           <div className="min-h-52 flex items-center justify-center flex-col">
-            <p className="text-2xl font-semibold text-primary">Oops!</p>
+            <p className="text-2xl font-semibold text-title">Oops!</p>
             <p className="text-center text-muted-foreground">
               No doctors found
             </p>

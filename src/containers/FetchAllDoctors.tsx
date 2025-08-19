@@ -59,7 +59,7 @@ const FetchAllDoctors: React.FC = () => {
   const statusFilter = searchParams.get("status") || "";
   const specialityFilter = searchParams.get("speciality") || "";
   const { data } = useFetchData("/admin/doctors/stats");
-
+  console.log(doctors);
   const getDoctors = useCallback(async () => {
     setLoading((prev) => ({ ...prev, fetch: true }));
     setIsError((prev) => ({ ...prev, fetch: null }));
