@@ -13,6 +13,7 @@ import SingleDoctorFetch from "@/containers/SingleDoctorFetch";
 import FetchProfile from "@/containers/FetchProfile";
 import FetchAllPatients from "@/containers/FetchAllPatients";
 import SinglePatient from "@/containers/SinglePatient";
+import TotalAppointments from "@/containers/TotalAppointments";
 
 const AdminRoutes = () => {
   return (
@@ -32,6 +33,7 @@ const AdminRoutes = () => {
           <Route path="/doctors/:id" element={<SingleDoctorFetch />} />
           <Route path="/patients" element={<FetchAllPatients />} />
           <Route path="/patients/:id" element={<SinglePatient />} />
+          <Route path="/total-apppointments" element={<TotalAppointments />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

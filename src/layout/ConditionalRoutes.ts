@@ -42,7 +42,7 @@ const ConditionalRoutes = (): NavItem[] => {
     {
       heading: "Appointments",
       title: "Total appointments",
-      url: "/total-apppintments",
+      url: "/total-apppointments",
       icon: IoTicket,
     },
     {

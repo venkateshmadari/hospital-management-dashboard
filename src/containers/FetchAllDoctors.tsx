@@ -16,15 +16,7 @@ import DeleteModal from "@/components/modals/DeleteModal";
 import toast from "react-hot-toast";
 import DoctorStatusChangeModal from "@/components/modals/DoctorStatusChangeModal";
 import DoctorsPage from "@/pages/DoctorsPage";
-
-interface PaginationState {
-  currentPage: number;
-  totalPages: number;
-  totalItems: number;
-  itemsPerPage: number;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-}
+import { PaginationStateTypes } from "@/types/pagination";
 
 const FetchAllDoctors: React.FC = () => {
   const [loading, setLoading] = useState({
@@ -45,7 +37,7 @@ const FetchAllDoctors: React.FC = () => {
     delete: false,
     edit: false,
   });
-  const [pagination, setPagination] = useState<PaginationState>({
+  const [pagination, setPagination] = useState<PaginationStateTypes>({
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
@@ -59,7 +51,7 @@ const FetchAllDoctors: React.FC = () => {
   const statusFilter = searchParams.get("status") || "";
   const specialityFilter = searchParams.get("speciality") || "";
   const { data } = useFetchData("/admin/doctors/stats");
-  console.log(doctors);
+
   const getDoctors = useCallback(async () => {
     setLoading((prev) => ({ ...prev, fetch: true }));
     setIsError((prev) => ({ ...prev, fetch: null }));

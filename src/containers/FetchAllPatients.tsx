@@ -6,19 +6,12 @@ import axiosInstance from "@/instance/instance";
 import PatientsPage from "@/pages/PatientsPage";
 import DoctorStatsCards from "@/stats/DoctorStatsCards";
 import { PatientType } from "@/types/all-patients";
+import { PaginationStateTypes } from "@/types/pagination";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FaUserFriends } from "react-icons/fa";
 import { FaUserClock } from "react-icons/fa6";
 import { useNavigate, useSearchParams } from "react-router-dom";
-interface PaginationState {
-  currentPage: number;
-  totalPages: number;
-  totalItems: number;
-  itemsPerPage: number;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-}
 
 const FetchAllPatients = () => {
   const [isLoading, setIsLoading] = useState<{
@@ -35,7 +28,7 @@ const FetchAllPatients = () => {
     fetch: null,
     delete: null,
   });
-  const [pagination, setPagination] = useState<PaginationState>({
+  const [pagination, setPagination] = useState<PaginationStateTypes>({
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
