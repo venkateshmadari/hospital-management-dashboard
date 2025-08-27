@@ -1,4 +1,4 @@
-export type TotalAppointmentTypes = {
+export type AppointmentTypes = {
   id: string;
   patientId: string;
   doctorId: string;
@@ -13,12 +13,5 @@ export type TotalAppointmentTypes = {
     name: string;
     image?: string;
     phoneNumber?: string;
-  };
-  doctor: {
-    id: string;
-    name: string;
-    email: string;
-    speciality: string;
-    image?: string;
   };
 };

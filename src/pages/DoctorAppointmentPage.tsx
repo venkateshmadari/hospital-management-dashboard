@@ -28,55 +28,58 @@ import { Link } from "react-router-dom";
 import { capitalizeFirstLetter } from "@/lib/capitalizeFirstLetter";
 import { formatCamelCase } from "@/lib/formatCamelCase";
 import formatDate from "@/lib/formatDate";
+import { AppointmentTypes } from "@/types/appointments";
+import { AppointmentStatusVariant } from "@/lib/statusVariants";
 
-interface DoctorsPageProps {
-  doctors: DoctorsType[];
+interface DoctorAppointmentPageProps {
+  doctorAppointments: AppointmentTypes[];
   loading: boolean;
   error: string | null;
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-  selectedDoctors: string[];
-  setSelectedDoctors: React.Dispatch<React.SetStateAction<string[]>>;
+  selectedAppointments: string[];
+  setSelectedAppointments: React.Dispatch<React.SetStateAction<string[]>>;
   handleDeleteSingle: (id: string) => void;
   handleDeleteSelected: () => void;
-  handleEditDoctor: (data: DoctorsType) => void;
+  handleEditAppointment: (data: AppointmentTypes) => void;
 }
 
-const DoctorsPage: React.FC<DoctorsPageProps> = ({
-  doctors,
+const DoctorAppointmentPage: React.FC<DoctorAppointmentPageProps> = ({
+  doctorAppointments,
   loading,
   error,
   currentPage,
   totalPages,
   onPageChange,
-  selectedDoctors = [],
-  setSelectedDoctors,
+  selectedAppointments = [],
+  setSelectedAppointments,
   handleDeleteSingle,
   handleDeleteSelected,
-  handleEditDoctor,
+  handleEditAppointment,
 }) => {
   const allSelected = useMemo(
-    () => doctors?.length > 0 && selectedDoctors?.length === doctors?.length,
-    [doctors?.length, selectedDoctors?.length]
+    () =>
+      doctorAppointments?.length > 0 &&
+      selectedAppointments?.length === doctorAppointments?.length,
+    [doctorAppointments?.length, selectedAppointments?.length]
   );
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedDoctors(doctors.map((doc) => doc.id));
+      setSelectedAppointments(doctorAppointments.map((doc) => doc.id));
     } else {
-      setSelectedDoctors([]);
+      setSelectedAppointments([]);
     }
   };
 
-  const handleSelectDoctor = (id: string, checked: boolean) => {
+  const handleSelectAppointment = (id: string, checked: boolean) => {
     if (checked) {
-      setSelectedDoctors((prev) => [...prev, id]);
+      setSelectedAppointments((prev) => [...prev, id]);
     } else {
-      setSelectedDoctors((prev) => prev.filter((docId) => docId !== id));
+      setSelectedAppointments((prev) => prev.filter((docId) => docId !== id));
     }
   };
-
   return (
     <Card className="w-full space-y-4 bg-background">
       <CardContent>
@@ -84,7 +87,7 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
           <TableSkeleton />
         ) : error ? (
           <ErrorBlock error={error} />
-        ) : doctors.length > 0 ? (
+        ) : doctorAppointments.length > 0 ? (
           <div className="min-w-[800px]">
             <Table>
               <TableHeader>
@@ -99,27 +102,30 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
                     />
                   </TableHead>
                   <TableHead className="min-w-[200px] uppercase">
-                    Details
+                    Patient
+                  </TableHead>
+                  <TableHead className="min-w-[200px] uppercase">
+                    Phone number
                   </TableHead>
                   <TableHead className="min-w-[150px] uppercase">
-                    Designation
+                    Appointment date
                   </TableHead>
                   <TableHead className="min-w-[120px] uppercase">
-                    Speciality
+                    Appointment time
                   </TableHead>
                   <TableHead className="min-w-[100px] uppercase">
                     Status
                   </TableHead>
                   <TableHead className="min-w-[120px] uppercase">
-                    Created
+                    Created on
                   </TableHead>
                   <TableHead className="w-12">
-                    {selectedDoctors.length > 0 && (
+                    {selectedAppointments.length > 0 && (
                       <div
                         onClick={handleDeleteSelected}
                         className="rounded-full inline-flex text-red-600 items-center gap-1 cursor-pointer"
                       >
-                        {selectedDoctors.length}
+                        {selectedAppointments.length}
                         <Trash2 size={15} />
                       </div>
                     )}
@@ -127,13 +133,16 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {doctors.map((doctor) => (
-                  <TableRow key={doctor.id}>
+                {doctorAppointments.map((appointment: AppointmentTypes) => (
+                  <TableRow key={appointment.id}>
                     <TableCell className="sticky left-0 bg-background z-10">
                       <Checkbox
-                        checked={selectedDoctors.includes(doctor.id)}
+                        checked={selectedAppointments.includes(appointment.id)}
                         onCheckedChange={(checked) =>
-                          handleSelectDoctor(doctor.id, checked as boolean)
+                          handleSelectAppointment(
+                            appointment.id,
+                            checked as boolean
+                          )
                         }
                         className="cursor-pointer"
                       />
@@ -143,45 +152,49 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
                           <AvatarImage
-                            src={doctor.image || undefined}
-                            alt={doctor.name}
+                            src={appointment.patient.image || undefined}
+                            alt={appointment.patient.name}
                             className="object-cover"
                           />
                           <AvatarFallback className="text-xs uppercase">
-                            {doctor.name?.slice(0, 1) ?? "?"}
+                            {appointment.patient.name?.slice(0, 1) ?? "?"}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
                           <span className="font-medium">
-                            {capitalizeFirstLetter(doctor.name)}
+                            {capitalizeFirstLetter(appointment.patient.name)}
                           </span>
-                          <span className="text-sm text-muted-foreground">
-                            {doctor.email}
-                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {appointment?.patient?.phoneNumber
+                              ? appointment?.patient?.phoneNumber
+                              : appointment.patient.email}
+                          </span> 
                         </div>
                       </div>
                     </TableCell>
 
                     <TableCell className="text-muted-foreground">
-                      {doctor.designation || "-"}
+                      {appointment.patient.phoneNumber || "-"}
                     </TableCell>
 
                     <TableCell className="text-muted-foreground">
-                      {formatCamelCase(doctor.speciality) || "-"}
+                      {formatDate(appointment.date)}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {appointment.startTime}
                     </TableCell>
 
                     <TableCell>
                       <Badge
-                        variant={
-                          doctor.status === "ACTIVE" ? "success" : "error"
-                        }
+                        variant={AppointmentStatusVariant(appointment.status)}
+                        className="capitalize"
                       >
-                        {doctor.status}
+                        {appointment.status?.toLowerCase()}
                       </Badge>
                     </TableCell>
 
                     <TableCell className="text-sm text-muted-foreground">
-                      {formatDate(doctor.createdAt)}
+                      {formatDate(appointment.createdAt)}
                     </TableCell>
 
                     <TableCell className="sticky right-0 bg-background z-10">
@@ -197,21 +210,15 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
                         </DropdownMenuTrigger>
 
                         <DropdownMenuContent align="end">
-                          <Link to={`/doctors/${doctor?.id}`}>
-                            <DropdownMenuItem className="cursor-pointer">
-                              <Eye className="mr-2 h-4 w-4" /> View
-                            </DropdownMenuItem>
-                          </Link>
-
                           <DropdownMenuItem
-                            onClick={() => handleEditDoctor(doctor)}
+                            onClick={() => handleEditAppointment(appointment)}
                             className="cursor-pointer"
                           >
                             <MdEdit className="mr-2 h-4 w-4" /> Edit
                           </DropdownMenuItem>
 
                           <DropdownMenuItem
-                            onClick={() => handleDeleteSingle(doctor.id)}
+                            onClick={() => handleDeleteSingle(appointment.id)}
                             className="text-red-600 cursor-pointer font-medium"
                           >
                             <Trash2 className="mr-2 h-4 w-4 text-red-600 " />{" "}
@@ -229,7 +236,7 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
           <div className="min-h-52 flex items-center justify-center flex-col">
             <p className="text-2xl font-semibold text-title">Oops!</p>
             <p className="text-center text-muted-foreground">
-              No doctors found
+              No appointments found
             </p>
           </div>
         )}
@@ -247,4 +254,4 @@ const DoctorsPage: React.FC<DoctorsPageProps> = ({
   );
 };
 
-export default DoctorsPage;
+export default DoctorAppointmentPage;

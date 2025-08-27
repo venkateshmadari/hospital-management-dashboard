@@ -21,6 +21,7 @@ interface DoctorFiltersProps {
   handleFilter: (filterType: string, value: string) => void;
   statusOptions: StatusOption[];
   specialityFilter: string | null;
+  placeholder?: string;
 }
 
 const DoctorFilters: React.FC<DoctorFiltersProps> = ({
@@ -28,6 +29,7 @@ const DoctorFilters: React.FC<DoctorFiltersProps> = ({
   handleFilter,
   statusOptions,
   specialityFilter,
+  placeholder,
 }) => {
   return (
     <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-4">
@@ -78,7 +80,9 @@ const DoctorFilters: React.FC<DoctorFiltersProps> = ({
             </SelectContent>
           </Select>
         </div>
-        <SearchInput placeholder="Search doctor" />
+        <SearchInput
+          placeholder={placeholder ? placeholder : "Search doctor"}
+        />
       </div>
     </div>
   );

@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import DoctorStatusChangeModal from "@/components/modals/DoctorStatusChangeModal";
 import DoctorsPage from "@/pages/DoctorsPage";
 import { PaginationStateTypes } from "@/types/pagination";
+import DoctorStatsCardsSkeleton from "@/components/skeletonLoadings/DoctorStatsCardsSkeleton";
 
 const FetchAllDoctors: React.FC = () => {
   const [loading, setLoading] = useState({
@@ -255,15 +256,19 @@ const FetchAllDoctors: React.FC = () => {
   return (
     <div className="flex flex-col">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
-        {stats.map((stat, index) => (
-          <DoctorStatsCards
-            key={index}
-            icon={stat.icon}
-            count={stat.count}
-            text={stat.text}
-            color={stat.color}
-          />
-        ))}
+        {loading.fetch ? (
+          <DoctorStatsCardsSkeleton />
+        ) : (
+          stats.map((stat, index) => (
+            <DoctorStatsCards
+              key={index}
+              icon={stat.icon}
+              count={stat.count}
+              text={stat.text}
+              color={stat.color}
+            />
+          ))
+        )}
       </div>
       <DoctorFilters
         statusFilter={statusFilter}

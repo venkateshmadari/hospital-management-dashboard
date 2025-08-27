@@ -10,15 +10,15 @@ import {
 import { Card } from "@/components/ui/card";
 
 const TableSkeleton = () => {
-  const skeletonRows = 20;
+  const skeletonRows = 10;
 
   return (
-    <Card className="w-full space-y-4 p-4 bg-background">
+    <Card className="w-full bg-background py-0">
       <div className="rounded-md border overflow-x-auto">
         <div className="min-w-[800px]">
           <Table>
             <TableHeader>
-              <TableRow className="py-4">
+              <TableRow className="">
                 <TableHead className="w-8">
                   <Skeleton className="h-4 w-4" />
                 </TableHead>

@@ -41,13 +41,18 @@ const ConditionalRoutes = (): NavItem[] => {
     },
     {
       heading: "Appointments",
+      title: "Appointments",
+      url: "/apppointments",
+      icon: IoTicket,
+    },
+    {
       title: "Total appointments",
       url: "/total-apppointments",
       icon: IoTicket,
     },
     {
-      title: "Cancelled appointments",
-      url: "/cancelled-appointments",
+      title: "Rejected appointments",
+      url: "/rejected-appointments",
       icon: TbTicketOff,
     },
   ];

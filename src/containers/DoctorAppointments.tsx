@@ -1,7 +1,6 @@
 import useFetchData from "@/hooks/useFetchData";
 import axiosInstance from "@/instance/instance";
 import { PaginationStateTypes } from "@/types/pagination";
-import { TotalAppointmentTypes } from "@/types/total-appointment";
 import { useCallback, useEffect, useState } from "react";
 import { IoMdBookmarks } from "react-icons/io";
 import {
@@ -15,11 +14,11 @@ import DoctorFilters from "@/pages/filters/DoctorFilters";
 import DoctorAppointmentPage from "@/pages/DoctorAppointmentPage";
 import DeleteModal from "@/components/modals/DeleteModal";
 import toast from "react-hot-toast";
+import { AppointmentTypes } from "@/types/appointments";
 import AppointmentStatusChangeModal from "@/components/modals/AppointmentStatusChangeModal";
-import TotalAppointmentsPage from "@/pages/TotalAppointmentsPage";
 import DoctorStatsCardsSkeleton from "@/components/skeletonLoadings/DoctorStatsCardsSkeleton";
 
-const TotalAppointments = () => {
+const DoctorAppointments = () => {
   const [loading, setLoading] = useState({
     fetch: false,
     edit: false,
@@ -34,10 +33,10 @@ const TotalAppointments = () => {
     delete: false,
     edit: false,
   });
-  const [appointments, setAppointments] = useState<TotalAppointmentTypes[]>([]);
+  const [appointments, setAppointments] = useState<AppointmentTypes[]>([]);
   const [selectedAppointment, setSelectedAppointment] = useState<string[]>([]);
   const [selectedEditAppointment, setSelectedEditAppointment] =
-    useState<TotalAppointmentTypes | null>(null);
+    useState<AppointmentTypes | null>(null);
   const [pagination, setPagination] = useState<PaginationStateTypes>({
     currentPage: 1,
     totalPages: 1,
@@ -52,9 +51,7 @@ const TotalAppointments = () => {
   const statusFilter = searchParams.get("status") || "";
   const specialityFilter = searchParams.get("speciality") || "";
 
-  const { data: appointmentStats } = useFetchData(
-    "/admin/total-appointments/stats"
-  );
+  const { data: appointmentStats } = useFetchData("/admin/appointments/stats");
 
   const fetchAppointments = useCallback(async () => {
     setLoading((prev) => ({ ...prev, fetch: true }));
@@ -66,11 +63,11 @@ const TotalAppointments = () => {
         ...(searchQuery && { search: searchQuery }),
         ...(statusFilter && statusFilter !== "all" && { status: statusFilter }),
         ...(specialityFilter &&
-          specialityFilter !== "all" && { speciality: specialityFilter }),
+          specialityFilter !== "all" && { status: specialityFilter }),
       });
 
       const response = await axiosInstance.get(
-        `/admin/total-appointments?${queryParams}`
+        `/admin/appointments?${queryParams}`
       );
       if (response?.status === 200) {
         setAppointments(response?.data?.data || []);
@@ -157,6 +154,14 @@ const TotalAppointments = () => {
     setToggleModal((prev) => ({ ...prev, delete: true }));
   };
 
+  const handleEditAppointment = (data: AppointmentTypes) => {
+    setToggleModal((prev) => ({
+      ...prev,
+      edit: true,
+    }));
+    setSelectedEditAppointment(data);
+  };
+
   const handleConfirmDelete = async () => {
     if (selectedAppointment.length === 0) return;
 
@@ -164,7 +169,7 @@ const TotalAppointments = () => {
     setIsError((prev) => ({ ...prev, delete: null }));
 
     try {
-      const response = await axiosInstance.delete("/admin/total-appointments", {
+      const response = await axiosInstance.delete("/admin/appointment", {
         data: { appointmentsId: selectedAppointment },
       });
 
@@ -195,6 +200,46 @@ const TotalAppointments = () => {
       toast.error(errorMessage);
     } finally {
       setLoading((prev) => ({ ...prev, delete: false }));
+    }
+  };
+
+  const confirmEditChange = async (id: string, status: string) => {
+    console.log(id, status);
+    setLoading((prev) => ({ ...prev, edit: true }));
+    setIsError((prev) => ({ ...prev, edit: null }));
+    try {
+      const response = await axiosInstance.put(
+        `/admin/appointments/status/${id}`,
+        {
+          status,
+        }
+      );
+      if (response.status === 200) {
+        setToggleModal((prev) => ({
+          ...prev,
+          edit: false,
+        }));
+        const updatedAppoinment = response.data.data;
+        console.log(updatedAppoinment);
+        setAppointments((prev) =>
+          prev.map((appointment) =>
+            appointment.id === id
+              ? { ...appointment, status: updatedAppoinment.status }
+              : appointment
+          )
+        );
+        toast.success(response?.data?.message);
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        "Unknown error";
+      setIsError((prev) => ({ ...prev, edit: errorMessage }));
+      toast.error(errorMessage);
+    } finally {
+      setLoading((prev) => ({ ...prev, edit: false }));
     }
   };
 
@@ -256,7 +301,7 @@ const TotalAppointments = () => {
         specialityFilter={specialityFilter}
         placeholder="Search appointments"
       />
-      <TotalAppointmentsPage
+      <DoctorAppointmentPage
         doctorAppointments={appointments}
         loading={loading.fetch}
         error={isError.fetch}
@@ -267,6 +312,7 @@ const TotalAppointments = () => {
         setSelectedAppointments={setSelectedAppointment}
         handleDeleteSingle={handleDeleteSingle}
         handleDeleteSelected={handleDeleteSelected}
+        handleEditAppointment={handleEditAppointment}
       />
       {toggleModal.delete && (
         <DeleteModal
@@ -277,8 +323,16 @@ const TotalAppointments = () => {
           DeleteLoading={loading.delete}
         />
       )}
+      <AppointmentStatusChangeModal
+        open={toggleModal.edit}
+        onOpenChange={handleCloseEditModal}
+        handleConfirm={confirmEditChange}
+        error={isError.edit}
+        isLoading={loading.edit}
+        selectedAppointment={selectedEditAppointment}
+      />
     </div>
   );
 };
 
-export default TotalAppointments;
+export default DoctorAppointments;
