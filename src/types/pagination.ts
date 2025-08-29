@@ -5,4 +5,5 @@ export type PaginationStateTypes = {
   itemsPerPage: number;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
+  totalCount?: number;
 };

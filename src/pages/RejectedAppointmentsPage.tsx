@@ -41,7 +41,7 @@ interface TotalAppointmentsPagePageProps {
   handleDeleteSelected: () => void;
 }
 
-const TotalAppointmentsPage: React.FC<TotalAppointmentsPagePageProps> = ({
+const RejectedAppointmentsPage: React.FC<TotalAppointmentsPagePageProps> = ({
   doctorAppointments,
   loading,
   error,
@@ -243,7 +243,7 @@ const TotalAppointmentsPage: React.FC<TotalAppointmentsPagePageProps> = ({
           <div className="min-h-52 flex items-center justify-center flex-col">
             <p className="text-2xl font-semibold text-title">Oops!</p>
             <p className="text-center text-muted-foreground">
-              No doctors get any appointments
+              No rejected appointments
             </p>
           </div>
         )}
@@ -261,4 +261,4 @@ const TotalAppointmentsPage: React.FC<TotalAppointmentsPagePageProps> = ({
   );
 };
 
-export default TotalAppointmentsPage;
+export default RejectedAppointmentsPage;

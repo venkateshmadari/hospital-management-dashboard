@@ -111,7 +111,13 @@ const RegisterPage = () => {
                   <Input
                     id="name"
                     placeholder="Enter your name"
-                    {...register("name", { required: "Name is required" })}
+                    {...register("name", {
+                      required: "Name is required",
+                      maxLength: {
+                        value: 25,
+                        message: "Name cannot exceed 25 characters",
+                      },
+                    })}
                   />
                   {errors.name && (
                     <p className="text-sm text-red-500">

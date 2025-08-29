@@ -16,21 +16,27 @@ import DeleteModal from "@/components/modals/DeleteModal";
 import toast from "react-hot-toast";
 import TotalAppointmentsPage from "@/pages/TotalAppointmentsPage";
 import DoctorStatsCardsSkeleton from "@/components/skeletonLoadings/DoctorStatsCardsSkeleton";
+import RejectedAppointmentFilter from "@/pages/filters/RejectedAppointmentFilter";
+import RejectedAppointmentsPage from "@/pages/RejectedAppointmentsPage";
 
-const TotalAppointments = () => {
+const RejectedAppointments = () => {
   const [loading, setLoading] = useState({
     fetch: false,
+    edit: false,
     delete: false,
   });
   const [isError, setIsError] = useState({
     fetch: null as string | null,
+    edit: null as string | null,
     delete: null as string | null,
   });
   const [toggleModal, setToggleModal] = useState({
     delete: false,
     edit: false,
   });
-  const [appointments, setAppointments] = useState<TotalAppointmentTypes[]>([]);
+  const [rejectedAppointments, setRejectedAppointments] = useState<
+    TotalAppointmentTypes[]
+  >([]);
   const [selectedAppointment, setSelectedAppointment] = useState<string[]>([]);
   const [pagination, setPagination] = useState<PaginationStateTypes>({
     currentPage: 1,
@@ -39,16 +45,12 @@ const TotalAppointments = () => {
     itemsPerPage: 20,
     hasNextPage: false,
     hasPreviousPage: false,
+    totalCount: 0,
   });
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get("search") || "";
-  const statusFilter = searchParams.get("status") || "";
   const specialityFilter = searchParams.get("speciality") || "";
-
-  const { data: appointmentStats } = useFetchData(
-    "/admin/total-appointments/stats"
-  );
 
   const fetchAppointments = useCallback(async () => {
     setLoading((prev) => ({ ...prev, fetch: true }));
@@ -58,21 +60,21 @@ const TotalAppointments = () => {
         limit: pagination.itemsPerPage.toString(),
         page: pagination.currentPage.toString(),
         ...(searchQuery && { search: searchQuery }),
-        ...(statusFilter && statusFilter !== "all" && { status: statusFilter }),
         ...(specialityFilter &&
           specialityFilter !== "all" && { speciality: specialityFilter }),
       });
 
       const response = await axiosInstance.get(
-        `/admin/total-appointments?${queryParams}`
+        `/admin/rejected-appointments?${queryParams}`
       );
       if (response?.status === 200) {
-        setAppointments(response?.data?.data || []);
+        setRejectedAppointments(response?.data?.data || []);
         setPagination((prev) => ({
           ...prev,
           currentPage: response.data?.pagination?.currentPage || 1,
           totalPages: response.data?.pagination?.totalPages || 1,
           totalItems: response.data?.pagination?.totalItems || 0,
+          totalCount: response.data?.pagination?.totalCount || 0,
           hasNextPage: response.data?.pagination?.hasNextPage || false,
           hasPreviousPage: response.data?.pagination?.hasPreviousPage || false,
         }));
@@ -94,7 +96,6 @@ const TotalAppointments = () => {
     }
   }, [
     searchQuery,
-    statusFilter,
     specialityFilter,
     pagination.currentPage,
     pagination.itemsPerPage,
@@ -120,14 +121,6 @@ const TotalAppointments = () => {
     navigate(newParams.toString() ? `?${newParams.toString()}` : "");
     setPagination((prev) => ({ ...prev, currentPage: 1 }));
   };
-
-  const filterOptions = [
-    { id: 1, name: "All Status", value: "all" },
-    { id: 2, name: "Accepted", value: "ACCEPTED" },
-    { id: 3, name: "Rejected", value: "REJECTED" },
-    { id: 3, name: "Pending", value: "PENDING" },
-    { id: 3, name: "Completed", value: "COMPLETED" },
-  ];
 
   const handleDeleteSingle = (id: string) => {
     setSelectedAppointment([id]);
@@ -161,7 +154,7 @@ const TotalAppointments = () => {
       if (response.status === 200) {
         toast.success(response.data.message);
         setToggleModal((prev) => ({ ...prev, delete: false }));
-        setAppointments((prev) =>
+        setRejectedAppointments((prev) =>
           prev.filter(
             (appointment) => !selectedAppointment.includes(appointment.id)
           )
@@ -187,66 +180,22 @@ const TotalAppointments = () => {
       setLoading((prev) => ({ ...prev, delete: false }));
     }
   };
-
-  const stats = [
-    {
-      icon: <IoMdBookmarks />,
-      count: appointmentStats?.totalAppointments,
-      text: "Total Appointments",
-      color: "bg-violet-500",
-    },
-    {
-      icon: <MdOutlinePendingActions />,
-      count: appointmentStats?.pendingAppointments,
-      text: "Pending Appointments",
-      color: "bg-yellow-500",
-    },
-    {
-      icon: <MdBookmarkAdd />,
-      count: appointmentStats?.acceptedAppointments,
-      text: "Accepted Appointments",
-      color: "bg-teal-500",
-    },
-    {
-      icon: <MdBookmarkAdd />,
-      count: appointmentStats?.rejectedAppointments,
-      text: "Rejected Appointments",
-      color: "bg-red-500",
-    },
-    {
-      icon: <MdBookmarkAdded />,
-      count: appointmentStats?.completedAppointments,
-      text: "Completed Appointments",
-      color: "bg-green-500",
-    },
-  ];
-
+  console.log(rejectedAppointments);
   return (
     <div className="flex flex-col">
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-5">
-        {loading.fetch ? (
-          <DoctorStatsCardsSkeleton length={5} />
-        ) : (
-          stats.map((stat, index) => (
-            <DoctorStatsCards
-              key={index}
-              icon={stat.icon}
-              count={stat.count}
-              text={stat.text}
-              color={stat.color}
-            />
-          ))
-        )}
-      </div>
-      <DoctorFilters
-        statusFilter={statusFilter}
+      <h1 className="mb-2">
+        <span className="text-muted-foreground">
+          Total rejected appointments :{" "}
+        </span>
+        {pagination.totalCount}
+      </h1>
+      <RejectedAppointmentFilter
         handleFilter={handleFilter}
-        statusOptions={filterOptions}
         specialityFilter={specialityFilter}
         placeholder="Search appointments"
       />
-      <TotalAppointmentsPage
-        doctorAppointments={appointments}
+      <RejectedAppointmentsPage
+        doctorAppointments={rejectedAppointments}
         loading={loading.fetch}
         error={isError.fetch}
         currentPage={pagination.currentPage}
@@ -270,4 +219,4 @@ const TotalAppointments = () => {
   );
 };
 
-export default TotalAppointments;
+export default RejectedAppointments;

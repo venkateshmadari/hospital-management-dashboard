@@ -25,10 +25,10 @@ export default function NotFound() {
 
         {/* Main Content */}
         <div>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-muted-foreground mb-4">
             Oops! Page Not Found
           </h2>
-          <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto leading-relaxed">
+          <p className="text-lg text-muted-foreground mb-8 max-w-md mx-auto leading-relaxed">
             The page you're looking for seems to have wandered off into the
             digital void. Don't worry, it happens to the best of us!
           </p>
@@ -39,7 +39,7 @@ export default function NotFound() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
             <button
               onClick={handleGoHome}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-indigo-800 via-violet-800 to-purple-800 text-white font-medium rounded-lg hover:from-indigo-600 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="inline-flex cursor-pointer items-center gap-2 px-6 py-3 bg-gradient-to-br from-indigo-800 via-violet-800 to-purple-800 text-white font-medium rounded-lg hover:from-indigo-600 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               <Home size={20} />
               Go Home
@@ -47,7 +47,7 @@ export default function NotFound() {
 
             <button
               onClick={handleGoBack}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg"
+              className="inline-flex cursor-pointer items-center gap-2 px-6 py-3 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg"
             >
               <ArrowLeft size={20} />
               Go Back
