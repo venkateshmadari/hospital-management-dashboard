@@ -168,7 +168,7 @@ const DoctorAppointmentPage: React.FC<DoctorAppointmentPageProps> = ({
                             {appointment?.patient?.phoneNumber
                               ? appointment?.patient?.phoneNumber
                               : appointment.patient.email}
-                          </span> 
+                          </span>
                         </div>
                       </div>
                     </TableCell>
@@ -178,10 +178,21 @@ const DoctorAppointmentPage: React.FC<DoctorAppointmentPageProps> = ({
                     </TableCell>
 
                     <TableCell className="text-muted-foreground">
-                      {formatDate(appointment.date)}
+                      {appointment?.ReassignedHistory?.length > 0
+                        ? formatDate(
+                            appointment.ReassignedHistory[
+                              appointment.ReassignedHistory.length - 1
+                            ].date
+                          )
+                        : formatDate(appointment.date)}
                     </TableCell>
+
                     <TableCell className="text-muted-foreground">
-                      {appointment.startTime}
+                      {appointment?.ReassignedHistory?.length > 0
+                        ? appointment?.ReassignedHistory[
+                            appointment?.ReassignedHistory?.length - 1
+                          ].startTime
+                        : appointment?.startTime}
                     </TableCell>
 
                     <TableCell>

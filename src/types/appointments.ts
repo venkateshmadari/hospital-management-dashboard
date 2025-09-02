@@ -14,4 +14,14 @@ export type AppointmentTypes = {
     image?: string;
     phoneNumber?: string;
   };
+  ReassignedHistory: {
+    appointmentId: string;
+    createdAt: string;
+    date: string;
+    fromDoctorId: string;
+    id: string;
+    reassignedBy: string;
+    startTime: string;
+    toDoctorId: string;
+  }[];
 };

@@ -18,26 +18,29 @@ import TotalAppointmentsPage from "@/pages/TotalAppointmentsPage";
 import DoctorStatsCardsSkeleton from "@/components/skeletonLoadings/DoctorStatsCardsSkeleton";
 import RejectedAppointmentFilter from "@/pages/filters/RejectedAppointmentFilter";
 import RejectedAppointmentsPage from "@/pages/RejectedAppointmentsPage";
+import ReassignModal from "@/components/modals/ReassignModal";
 
 const RejectedAppointments = () => {
   const [loading, setLoading] = useState({
     fetch: false,
-    edit: false,
+    reassign: false,
     delete: false,
   });
   const [isError, setIsError] = useState({
     fetch: null as string | null,
-    edit: null as string | null,
+    reassign: null as string | null,
     delete: null as string | null,
   });
   const [toggleModal, setToggleModal] = useState({
     delete: false,
-    edit: false,
+    reassign: false,
   });
   const [rejectedAppointments, setRejectedAppointments] = useState<
     TotalAppointmentTypes[]
   >([]);
   const [selectedAppointment, setSelectedAppointment] = useState<string[]>([]);
+  const [selectRejectAppointment, setSelectRejectAppointment] =
+    useState<TotalAppointmentTypes | null>(null);
   const [pagination, setPagination] = useState<PaginationStateTypes>({
     currentPage: 1,
     totalPages: 1,
@@ -180,6 +183,12 @@ const RejectedAppointments = () => {
       setLoading((prev) => ({ ...prev, delete: false }));
     }
   };
+
+  const handleReassignAppointment = (data: TotalAppointmentTypes) => {
+    setSelectRejectAppointment(data);
+    setToggleModal((prev) => ({ ...prev, reassign: true }));
+  };
+
   console.log(rejectedAppointments);
   return (
     <div className="flex flex-col">
@@ -205,6 +214,7 @@ const RejectedAppointments = () => {
         setSelectedAppointments={setSelectedAppointment}
         handleDeleteSingle={handleDeleteSingle}
         handleDeleteSelected={handleDeleteSelected}
+        handleReassign={handleReassignAppointment}
       />
       {toggleModal.delete && (
         <DeleteModal
@@ -215,6 +225,13 @@ const RejectedAppointments = () => {
           DeleteLoading={loading.delete}
         />
       )}
+      <ReassignModal
+        open={toggleModal.reassign}
+        onOpenChange={(value: boolean) => {
+          setToggleModal((prev) => ({ ...prev, reassign: value }));
+        }}
+        selectedAppointment={selectRejectAppointment}
+      />
     </div>
   );
 };

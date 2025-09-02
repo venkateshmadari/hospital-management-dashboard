@@ -29,7 +29,7 @@ const MainSidebar: React.FC<SidebarProps> = ({ children }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState<boolean>(false);
   const location = useLocation();
-  const { role } = useAuth();
+  const { role, user } = useAuth();
   const navItems = ConditionalRoutes();
 
   return (
@@ -52,7 +52,7 @@ const MainSidebar: React.FC<SidebarProps> = ({ children }) => {
                 transition={{ duration: 0.2 }}
                 className="flex items-center gap-2  justify-center text-center font-unbounded "
               >
-                Hello {role ? role : "user"}
+                Hello {user ? user?.name : "doctor"}
               </motion.div>
             )}
           </AnimatePresence>

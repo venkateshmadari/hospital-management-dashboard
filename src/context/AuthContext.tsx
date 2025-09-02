@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any>(false);
   const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
+ 
   const getUserData = useCallback(async () => {
     setLoading(true);
     try {

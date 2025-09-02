@@ -27,6 +27,7 @@ import formatDate from "@/lib/formatDate";
 import { AppointmentStatusVariant } from "@/lib/statusVariants";
 import { TotalAppointmentTypes } from "@/types/total-appointment";
 import { formatCamelCase } from "@/lib/formatCamelCase";
+import { RiLoopLeftLine } from "react-icons/ri";
 
 interface TotalAppointmentsPagePageProps {
   doctorAppointments: TotalAppointmentTypes[];
@@ -39,6 +40,7 @@ interface TotalAppointmentsPagePageProps {
   setSelectedAppointments: React.Dispatch<React.SetStateAction<string[]>>;
   handleDeleteSingle: (id: string) => void;
   handleDeleteSelected: () => void;
+  handleReassign: (value: TotalAppointmentTypes) => void;
 }
 
 const RejectedAppointmentsPage: React.FC<TotalAppointmentsPagePageProps> = ({
@@ -52,6 +54,7 @@ const RejectedAppointmentsPage: React.FC<TotalAppointmentsPagePageProps> = ({
   setSelectedAppointments,
   handleDeleteSingle,
   handleDeleteSelected,
+  handleReassign,
 }) => {
   const allSelected = useMemo(
     () =>
@@ -223,6 +226,13 @@ const RejectedAppointmentsPage: React.FC<TotalAppointmentsPagePageProps> = ({
                           </DropdownMenuTrigger>
 
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => handleReassign(appointment)}
+                              className="cursor-pointer font-medium text-title"
+                            >
+                              <RiLoopLeftLine className="mr-2 h-4 w-4 text-title" />{" "}
+                              Reassign
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => handleDeleteSingle(appointment.id)}
                               className="text-red-600 cursor-pointer font-medium"
