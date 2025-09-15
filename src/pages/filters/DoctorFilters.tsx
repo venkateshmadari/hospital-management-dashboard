@@ -9,6 +9,7 @@ import {
 import { Filter } from "lucide-react";
 import { specialities } from "../auth/RegisterPage";
 import SearchInput from "@/components/SearchInput";
+import { useLocation } from "react-router-dom";
 
 interface StatusOption {
   id: number;
@@ -31,6 +32,8 @@ const DoctorFilters: React.FC<DoctorFiltersProps> = ({
   specialityFilter,
   placeholder,
 }) => {
+  const location = useLocation();
+  console.log(location.pathname);
   return (
     <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-4">
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between flex-1">
@@ -55,30 +58,31 @@ const DoctorFilters: React.FC<DoctorFiltersProps> = ({
               ))}
             </SelectContent>
           </Select>
-
-          <Select
-            onValueChange={(value) => handleFilter("speciality", value)}
-            value={specialityFilter || "all"}
-          >
-            <SelectTrigger className="w-full text-sm cursor-pointer">
-              <Filter />
-              <SelectValue placeholder="Speciality" className="select-none" />
-            </SelectTrigger>
-            <SelectContent className="max-h-[450px] overflow-y-auto">
-              <SelectItem value="all" className="select-none cursor-pointer">
-                All Specialities
-              </SelectItem>
-              {specialities.map((spec) => (
-                <SelectItem
-                  key={spec.value}
-                  value={spec.value}
-                  className="select-none cursor-pointer"
-                >
-                  {spec.label}
+          {location.pathname === "/total-apppointments" && (
+            <Select
+              onValueChange={(value) => handleFilter("speciality", value)}
+              value={specialityFilter || "all"}
+            >
+              <SelectTrigger className="w-full text-sm cursor-pointer">
+                <Filter />
+                <SelectValue placeholder="Speciality" className="select-none" />
+              </SelectTrigger>
+              <SelectContent className="max-h-[450px] overflow-y-auto">
+                <SelectItem value="all" className="select-none cursor-pointer">
+                  All Specialities
                 </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                {specialities.map((spec) => (
+                  <SelectItem
+                    key={spec.value}
+                    value={spec.value}
+                    className="select-none cursor-pointer"
+                  >
+                    {spec.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
         <SearchInput
           placeholder={placeholder ? placeholder : "Search doctor"}

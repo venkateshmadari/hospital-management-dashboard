@@ -17,10 +17,13 @@ type NavItem = {
   url: string;
   icon: any;
   items?: SubItem[];
+  requiredPermission?: string;
 };
 
 const ConditionalRoutes = (): NavItem[] => {
-  const { role } = useAuth();
+  const { permissions } = useAuth();
+  const hasPermission = (perm: string) =>
+    permissions?.some((p) => p.name === perm);
 
   const navItems: NavItem[] = [
     { title: "Dashboard", url: "/", icon: TbLayoutDashboardFilled },
@@ -28,35 +31,44 @@ const ConditionalRoutes = (): NavItem[] => {
       title: "Profile",
       url: "/profile",
       icon: FaCircleUser,
+      requiredPermission: "VIEW_PROFILE",
     },
     {
       title: "Doctors",
       url: "/doctors",
       icon: RiStethoscopeFill,
+      requiredPermission: "VIEW_DOCTORS",
     },
     {
       title: "Patients",
       url: "/patients",
       icon: HiUsers,
+      requiredPermission: "VIEW_PATIENTS",
     },
     {
       heading: "Appointments",
       title: "Appointments",
       url: "/apppointments",
       icon: IoTicket,
+      requiredPermission: "VIEW_APPOINTMENTS",
     },
     {
+      heading: "Appointments",
       title: "Total appointments",
       url: "/total-apppointments",
       icon: IoTicket,
+      requiredPermission: "VIEW_TOTAL_APPOINTMENTS",
     },
     {
       title: "Rejected appointments",
       url: "/rejected-appointments",
       icon: TbTicketOff,
+      requiredPermission: "VIEW_REJECTED_APPOINTMENTS",
     },
   ];
-  return navItems;
+  return navItems.filter(
+    (item) => !item.requiredPermission || hasPermission(item.requiredPermission)
+  );
 };
 
 export default ConditionalRoutes;

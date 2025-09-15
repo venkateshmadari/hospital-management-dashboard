@@ -27,6 +27,7 @@ import formatDate from "@/lib/formatDate";
 import { AppointmentStatusVariant } from "@/lib/statusVariants";
 import { TotalAppointmentTypes } from "@/types/total-appointment";
 import { formatCamelCase } from "@/lib/formatCamelCase";
+import { useAuth } from "@/context/AuthContext";
 
 interface TotalAppointmentsPagePageProps {
   doctorAppointments: TotalAppointmentTypes[];
@@ -53,6 +54,7 @@ const TotalAppointmentsPage: React.FC<TotalAppointmentsPagePageProps> = ({
   handleDeleteSingle,
   handleDeleteSelected,
 }) => {
+  const { permissions } = useAuth();
   const allSelected = useMemo(
     () =>
       doctorAppointments?.length > 0 &&
@@ -75,6 +77,11 @@ const TotalAppointmentsPage: React.FC<TotalAppointmentsPagePageProps> = ({
       setSelectedAppointments((prev) => prev.filter((docId) => docId !== id));
     }
   };
+
+  const hasDeletePermission = permissions.some(
+    (prem) => prem.name === "DELETE_TOTAL_APPOINTMENTS"
+  );
+
   return (
     <Card className="w-full space-y-4 bg-background">
       <CardContent>
@@ -87,15 +94,17 @@ const TotalAppointmentsPage: React.FC<TotalAppointmentsPagePageProps> = ({
             <Table>
               <TableHeader>
                 <TableRow className="py-4">
-                  <TableHead className="w-8">
-                    <Checkbox
-                      checked={allSelected}
-                      onCheckedChange={(checked) =>
-                        handleSelectAll(checked as boolean)
-                      }
-                      className="cursor-pointer"
-                    />
-                  </TableHead>
+                  {hasDeletePermission && (
+                    <TableHead className="w-8">
+                      <Checkbox
+                        checked={allSelected}
+                        onCheckedChange={(checked) =>
+                          handleSelectAll(checked as boolean)
+                        }
+                        className="cursor-pointer"
+                      />
+                    </TableHead>
+                  )}
                   <TableHead className="min-w-[200px] uppercase">
                     Patient
                   </TableHead>
@@ -111,37 +120,41 @@ const TotalAppointmentsPage: React.FC<TotalAppointmentsPagePageProps> = ({
                   <TableHead className="min-w-[120px] uppercase">
                     Created on
                   </TableHead>
-                  <TableHead className="w-12">
-                    {selectedAppointments.length > 0 && (
-                      <div
-                        onClick={handleDeleteSelected}
-                        className="rounded-full inline-flex text-red-600 items-center gap-1 cursor-pointer"
-                      >
-                        {selectedAppointments.length}
-                        <Trash2 size={15} />
-                      </div>
-                    )}
-                  </TableHead>
+                  {hasDeletePermission && (
+                    <TableHead className="w-12">
+                      {selectedAppointments.length > 0 && (
+                        <div
+                          onClick={handleDeleteSelected}
+                          className="rounded-full inline-flex text-red-600 items-center gap-1 cursor-pointer"
+                        >
+                          {selectedAppointments.length}
+                          <Trash2 size={15} />
+                        </div>
+                      )}
+                    </TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {doctorAppointments.map(
                   (appointment: TotalAppointmentTypes) => (
                     <TableRow key={appointment.id}>
-                      <TableCell className="sticky left-0 bg-background z-10">
-                        <Checkbox
-                          checked={selectedAppointments.includes(
-                            appointment.id
-                          )}
-                          onCheckedChange={(checked) =>
-                            handleSelectAppointment(
-                              appointment.id,
-                              checked as boolean
-                            )
-                          }
-                          className="cursor-pointer"
-                        />
-                      </TableCell>
+                      {hasDeletePermission && (
+                        <TableCell className="sticky left-0 bg-background z-10">
+                          <Checkbox
+                            checked={selectedAppointments.includes(
+                              appointment.id
+                            )}
+                            onCheckedChange={(checked) =>
+                              handleSelectAppointment(
+                                appointment.id,
+                                checked as boolean
+                              )
+                            }
+                            className="cursor-pointer"
+                          />
+                        </TableCell>
+                      )}
 
                       <TableCell>
                         <div className="flex items-center gap-3">
@@ -209,30 +222,33 @@ const TotalAppointmentsPage: React.FC<TotalAppointmentsPagePageProps> = ({
                       <TableCell className="text-sm text-muted-foreground">
                         {formatDate(appointment.createdAt)}
                       </TableCell>
+                      {hasDeletePermission && (
+                        <TableCell className="sticky right-0 bg-background z-10">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                className="h-8 w-8 p-0 cursor-pointer"
+                              >
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
 
-                      <TableCell className="sticky right-0 bg-background z-10">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              className="h-8 w-8 p-0 cursor-pointer"
-                            >
-                              <span className="sr-only">Open menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => handleDeleteSingle(appointment.id)}
-                              className="text-red-600 cursor-pointer font-medium"
-                            >
-                              <Trash2 className="mr-2 h-4 w-4 text-red-600 " />{" "}
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleDeleteSingle(appointment.id)
+                                }
+                                className="text-red-600 cursor-pointer font-medium"
+                              >
+                                <Trash2 className="mr-2 h-4 w-4 text-red-600 " />{" "}
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      )}
                     </TableRow>
                   )
                 )}

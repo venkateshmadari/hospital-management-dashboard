@@ -7,7 +7,6 @@ import ForgotPassword from "@/pages/auth/ForgotPassword";
 import ResetPassword from "@/pages/auth/ResetPassword";
 import RegisterPage from "@/pages/auth/RegisterPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import PatientsPage from "@/pages/PatientsPage";
 import FetchAllDoctors from "@/containers/FetchAllDoctors";
 import SingleDoctorFetch from "@/containers/SingleDoctorFetch";
 import FetchProfile from "@/containers/FetchProfile";
@@ -16,6 +15,7 @@ import SinglePatient from "@/containers/SinglePatient";
 import DoctorAppointments from "@/containers/DoctorAppointments";
 import TotalAppointments from "@/containers/TotalAppointments";
 import RejectedAppointments from "@/containers/RejectedAppointments";
+import PermissionProtect from "./PermissionProtect";
 
 const AdminRoutes = () => {
   return (
@@ -30,16 +30,69 @@ const AdminRoutes = () => {
 
         <Route element={<PrivateRoutes />}>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/profile" element={<FetchProfile />} />
-          <Route path="/doctors" element={<FetchAllDoctors />} />
-          <Route path="/doctors/:id" element={<SingleDoctorFetch />} />
-          <Route path="/patients" element={<FetchAllPatients />} />
-          <Route path="/patients/:id" element={<SinglePatient />} />
-          <Route path="/apppointments" element={<DoctorAppointments />} />
-          <Route path="/total-apppointments" element={<TotalAppointments />} />
+          <Route
+            path="/profile"
+            element={
+              <PermissionProtect allowedPermission="VIEW_PROFILE">
+                <FetchProfile />
+              </PermissionProtect>
+            }
+          />
+          <Route
+            path="/doctors"
+            element={
+              <PermissionProtect allowedPermission="VIEW_DOCTORS">
+                <FetchAllDoctors />
+              </PermissionProtect>
+            }
+          />
+          <Route
+            path="/doctors/:id"
+            element={
+              <PermissionProtect allowedPermission="VIEW_DOCTORS">
+                <SingleDoctorFetch />
+              </PermissionProtect>
+            }
+          />
+          <Route
+            path="/patients"
+            element={
+              <PermissionProtect allowedPermission="VIEW_PATIENTS">
+                <FetchAllPatients />
+              </PermissionProtect>
+            }
+          />
+          <Route
+            path="/patients/:id"
+            element={
+              <PermissionProtect allowedPermission="VIEW_PATIENTS">
+                <SinglePatient />
+              </PermissionProtect>
+            }
+          />
+          <Route
+            path="/apppointments"
+            element={
+              <PermissionProtect allowedPermission="VIEW_APPOINTMENTS">
+                <DoctorAppointments />
+              </PermissionProtect>
+            }
+          />
+          <Route
+            path="/total-apppointments"
+            element={
+              <PermissionProtect allowedPermission="VIEW_TOTAL_APPOINTMENTS">
+                <TotalAppointments />
+              </PermissionProtect>
+            }
+          />
           <Route
             path="/rejected-appointments"
-            element={<RejectedAppointments />}
+            element={
+              <PermissionProtect allowedPermission="VIEW_REJECTED_APPOINTMENTS">
+                <RejectedAppointments />
+              </PermissionProtect>
+            }
           />
         </Route>
 

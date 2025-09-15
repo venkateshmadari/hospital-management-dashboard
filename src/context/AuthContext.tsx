@@ -25,8 +25,15 @@ type User = {
   Avability: doctorAvailability[];
 };
 
+type PermissionsTypes = {
+  id: number;
+  label: string;
+  name: string;
+};
+
 interface AuthContextType {
   user: User | null;
+  permissions: PermissionsTypes[];
   setUser: any;
   role: string | null;
   loading: boolean;
@@ -58,12 +65,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any>(false);
   const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
- 
+  const [permissions, setPermissions] = useState<PermissionsTypes[]>([]);
+
   const getUserData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axiosInstance.get("/admin/auth/getUserData");
       if (response?.status === 200) {
+        setPermissions(response?.data?.user?.permissions);
         setUser(response?.data?.user);
         setRole(response?.data?.user?.role);
       }
@@ -252,6 +261,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       registerUser,
       updateProfileImage,
       updatedProfileData,
+      permissions,
     }),
     [
       user,
@@ -264,6 +274,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       registerUser,
       updateProfileImage,
       updatedProfileData,
+      permissions,
     ]
   );
 

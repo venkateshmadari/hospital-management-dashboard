@@ -27,6 +27,7 @@ import PaginationComponent from "@/components/PaginationComponent";
 import { Link } from "react-router-dom";
 import { capitalizeFirstLetter } from "@/lib/capitalizeFirstLetter";
 import formatDate from "@/lib/formatDate";
+import { useAuth } from "@/context/AuthContext";
 
 const PatientsPage = ({
   loading,
@@ -51,6 +52,7 @@ const PatientsPage = ({
   handleDeleteSingle: (id: string) => void;
   handleDeleteSelected: () => void;
 }) => {
+  const { permissions } = useAuth();
   const allSelected = useMemo(
     () => patients.length > 0 && selectedPatients.length === patients.length,
     [patients.length, selectedPatients.length]
@@ -72,6 +74,10 @@ const PatientsPage = ({
     }
   };
 
+  const hasDeletePermission = permissions.some(
+    (prem) => prem.name === "DELETE_PATIENTS"
+  );
+
   return (
     <Card className="w-full space-y-4 bg-background">
       <CardContent>
@@ -84,15 +90,17 @@ const PatientsPage = ({
             <Table>
               <TableHeader>
                 <TableRow className="py-4">
-                  <TableHead className="w-8">
-                    <Checkbox
-                      checked={allSelected}
-                      onCheckedChange={(checked) =>
-                        handleSelectAll(checked as boolean)
-                      }
-                      className="cursor-pointer"
-                    />
-                  </TableHead>
+                  {hasDeletePermission && (
+                    <TableHead className="w-8">
+                      <Checkbox
+                        checked={allSelected}
+                        onCheckedChange={(checked) =>
+                          handleSelectAll(checked as boolean)
+                        }
+                        className="cursor-pointer"
+                      />
+                    </TableHead>
+                  )}
                   <TableHead className="min-w-[200px] uppercase">
                     Name
                   </TableHead>
@@ -102,31 +110,35 @@ const PatientsPage = ({
                   <TableHead className="min-w-[120px] uppercase">
                     Created
                   </TableHead>
-                  <TableHead className="w-12">
-                    {selectedPatients.length > 0 && (
-                      <div
-                        onClick={handleDeleteSelected}
-                        className="rounded-full inline-flex text-red-600 items-center gap-1 cursor-pointer"
-                      >
-                        {selectedPatients.length}
-                        <Trash2 size={15} />
-                      </div>
-                    )}
-                  </TableHead>
+                  {hasDeletePermission && (
+                    <TableHead className="w-12">
+                      {selectedPatients.length > 0 && (
+                        <div
+                          onClick={handleDeleteSelected}
+                          className="rounded-full inline-flex text-red-600 items-center gap-1 cursor-pointer"
+                        >
+                          {selectedPatients.length}
+                          <Trash2 size={15} />
+                        </div>
+                      )}
+                    </TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {patients.map((patient) => (
                   <TableRow key={patient.id}>
-                    <TableCell className="sticky left-0 bg-background z-10">
-                      <Checkbox
-                        checked={selectedPatients.includes(patient.id)}
-                        onCheckedChange={(checked) =>
-                          handleSelectPatient(patient.id, checked as boolean)
-                        }
-                        className="cursor-pointer"
-                      />
-                    </TableCell>
+                    {hasDeletePermission && (
+                      <TableCell className="sticky left-0 bg-background z-10">
+                        <Checkbox
+                          checked={selectedPatients.includes(patient.id)}
+                          onCheckedChange={(checked) =>
+                            handleSelectPatient(patient.id, checked as boolean)
+                          }
+                          className="cursor-pointer"
+                        />
+                      </TableCell>
+                    )}
 
                     <TableCell>
                       <div className="flex items-center gap-3">
@@ -173,13 +185,15 @@ const PatientsPage = ({
                               <Eye className="mr-2 h-4 w-4" /> View
                             </DropdownMenuItem>
                           </Link>
-                          <DropdownMenuItem
-                            onClick={() => handleDeleteSingle(patient.id)}
-                            className="text-red-600 cursor-pointer font-medium"
-                          >
-                            <Trash2 className="mr-2 h-4 w-4 text-red-600 " />{" "}
-                            Delete
-                          </DropdownMenuItem>
+                          {hasDeletePermission && (
+                            <DropdownMenuItem
+                              onClick={() => handleDeleteSingle(patient.id)}
+                              className="text-red-600 cursor-pointer font-medium"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4 text-red-600 " />{" "}
+                              Delete
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
