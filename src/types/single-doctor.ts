@@ -10,6 +10,32 @@ export type doctorAvailability = {
   updatedAt: string;
 };
 
+export interface Patient {
+  id: string;
+  name: string;
+  email: string;
+  phoneNumber: string | null;
+  image: string | null;
+}
+
+export type doctorsIndividualAppointments = {
+  id: string;
+  doctorId: string;
+  patientId: string;
+  patient: Patient;
+  date: string;
+  startTime: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DoctorPermissionsTypes = {
+  id: number;
+  name: string;
+  label: string;
+};
+
 export type SingleDoctorTypes = {
   id: string;
   name: string;
@@ -22,4 +48,6 @@ export type SingleDoctorTypes = {
   speciality: string;
   description?: any;
   Avability?: doctorAvailability[];
+  Appointment: doctorsIndividualAppointments[];
+  DoctorPermissions: DoctorPermissionsTypes[];
 };
