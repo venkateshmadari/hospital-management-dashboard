@@ -1,18 +1,17 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { capitalizeFirstLetter } from "@/lib/capitalizeFirstLetter";
-import { SingleDoctorTypes } from "@/types/single-doctor";
 import { PatientType } from "@/types/all-patients";
 import formatDate from "@/lib/formatDate";
 
 const PatientInfoCard = ({ data }: { data: PatientType }) => {
+  const endPoint = import.meta.env.VITE_PUBLIC_IMAGE_URL;
   return (
     <Card className="bg-background rounded-3xl">
       <CardContent className="flex items-center gap-4">
         <Avatar className="h-16 w-16">
           <AvatarImage
-            src={data?.image}
+            src={`${endPoint}${data?.image}`}
             alt={data?.name}
             className="object-cover"
           />

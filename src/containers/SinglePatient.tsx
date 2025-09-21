@@ -1,5 +1,6 @@
 import DoubleBreadcrumbs from "@/components/Breadcrumbs/DoubleBreadcrumbs";
 import ErrorBlock from "@/components/ErrorBlock";
+import PatientAppointmentsData from "@/components/patientComponents/patientAppointmentsData";
 import PatientInfoCard from "@/components/patientComponents/PatientInfoCard";
 import DataCardSkeleton from "@/components/skeletonLoadings/DataCardSkeleton";
 import useFetchData from "@/hooks/useFetchData";
@@ -29,6 +30,7 @@ const SinglePatient = () => {
         ) : (
           <div className="space-y-4">
             <PatientInfoCard data={data} />
+            <PatientAppointmentsData data={data?.Appointment} />
           </div>
         )}
       </div>

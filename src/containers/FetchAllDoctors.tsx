@@ -18,6 +18,7 @@ import DoctorStatusChangeModal from "@/components/modals/DoctorStatusChangeModal
 import DoctorsPage from "@/pages/DoctorsPage";
 import { PaginationStateTypes } from "@/types/pagination";
 import DoctorStatsCardsSkeleton from "@/components/skeletonLoadings/DoctorStatsCardsSkeleton";
+import ErrorBlock from "@/components/ErrorBlock";
 
 const FetchAllDoctors: React.FC = () => {
   const [loading, setLoading] = useState({
@@ -51,7 +52,11 @@ const FetchAllDoctors: React.FC = () => {
   const searchQuery = searchParams.get("search") || "";
   const statusFilter = searchParams.get("status") || "";
   const specialityFilter = searchParams.get("speciality") || "";
-  const { data } = useFetchData("/admin/doctors/stats");
+  const {
+    data,
+    isLoading: StatsLoading,
+    isError: StatsError,
+  } = useFetchData("/admin/doctors/stats");
 
   const getDoctors = useCallback(async () => {
     setLoading((prev) => ({ ...prev, fetch: true }));
@@ -256,8 +261,10 @@ const FetchAllDoctors: React.FC = () => {
   return (
     <div className="flex flex-col">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
-        {loading.fetch ? (
+        {StatsLoading ? (
           <DoctorStatsCardsSkeleton />
+        ) : StatsError ? (
+          <ErrorBlock error={StatsError} />
         ) : (
           stats.map((stat, index) => (
             <DoctorStatsCards

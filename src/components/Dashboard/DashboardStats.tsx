@@ -1,5 +1,4 @@
 import ErrorBlock from "@/components/ErrorBlock";
-import DashboardCardSkeleton from "@/components/skeletonLoadings/DashboardCardSkeleton";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import useFetchData from "@/hooks/useFetchData";
@@ -10,6 +9,7 @@ import { MdBookmarkAdded, MdOutlinePendingActions } from "react-icons/md";
 import { RiStethoscopeFill } from "react-icons/ri";
 import { TbTicketOff } from "react-icons/tb";
 import { Link } from "react-router-dom";
+import DoctorStatsCardsSkeleton from "../skeletonLoadings/DoctorStatsCardsSkeleton";
 
 export default function DashboardStats() {
   const { data, isLoading, isError } = useFetchData("/admin/dashboard");
@@ -133,7 +133,9 @@ export default function DashboardStats() {
   return (
     <>
       {isLoading ? (
-        <DashboardCardSkeleton />
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <DoctorStatsCardsSkeleton length={4} />
+        </div>
       ) : isError ? (
         <ErrorBlock error={isError} />
       ) : (

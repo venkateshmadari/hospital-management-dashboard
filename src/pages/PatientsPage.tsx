@@ -77,6 +77,7 @@ const PatientsPage = ({
   const hasDeletePermission = permissions.some(
     (prem) => prem.name === "DELETE_PATIENTS"
   );
+  const endPoint = import.meta.env.VITE_PUBLIC_IMAGE_URL;
 
   return (
     <Card className="w-full space-y-4 bg-background">
@@ -144,7 +145,7 @@ const PatientsPage = ({
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
                           <AvatarImage
-                            src={patient.image || undefined}
+                            src={`${endPoint}${patient.image}`}
                             alt={patient.name}
                           />
                           <AvatarFallback className="text-xs uppercase">

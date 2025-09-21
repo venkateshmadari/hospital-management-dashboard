@@ -1,5 +1,7 @@
+import ErrorBlock from "@/components/ErrorBlock";
 import DeleteModal from "@/components/modals/DeleteModal";
 import SearchInput from "@/components/SearchInput";
+import DoctorStatsCardsSkeleton from "@/components/skeletonLoadings/DoctorStatsCardsSkeleton";
 import useFetchData from "@/hooks/useFetchData";
 import useFetchDataWithPagination from "@/hooks/useFetchDataWithPagination";
 import axiosInstance from "@/instance/instance";
@@ -42,7 +44,11 @@ const FetchAllPatients = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get("search") || "";
-  const { data: patientStats } = useFetchData("/admin/patients/stats");
+  const {
+    data: patientStats,
+    isLoading: patientStatsLoading,
+    isError: patientStatsError,
+  } = useFetchData("/admin/patients/stats");
 
   const getPatients = useCallback(async () => {
     setIsLoading((prev) => ({
@@ -177,16 +183,23 @@ const FetchAllPatients = () => {
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-        {stats.map((stat, index) => (
-          <DoctorStatsCards
-            key={index}
-            icon={stat.icon}
-            count={stat.count}
-            text={stat.text}
-            color={stat.color}
-          />
-        ))}
+        {patientStatsLoading ? (
+          <DoctorStatsCardsSkeleton length={2} />
+        ) : patientStatsError ? (
+          <ErrorBlock error={patientStatsError} />
+        ) : (
+          stats.map((stat, index) => (
+            <DoctorStatsCards
+              key={index}
+              icon={stat.icon}
+              count={stat.count}
+              text={stat.text}
+              color={stat.color}
+            />
+          ))
+        )}
       </div>
+
       <div className="flex items-center justify-end mb-5">
         <SearchInput placeholder="Search patients" />
       </div>

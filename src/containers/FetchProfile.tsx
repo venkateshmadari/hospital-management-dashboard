@@ -291,7 +291,7 @@ const FetchProfile = () => {
       profile: true,
     }));
   };
-
+  
   return (
     <div>
       <SingleBreadcrumbs name="Profile" />
@@ -313,7 +313,7 @@ const FetchProfile = () => {
             </AvatarFallback>
           </Avatar>
           {isHovered && (
-            <div className="absolute bottom-0 right-0 bg-background p-2 rounded-full shadow-md cursor-pointer">
+            <div className="absolute bottom-0 right-0 bg-background p-2 rounded-full shadow-md cursor-pointer ">
               <Pencil className="h-4 w-4" />
             </div>
           )}
@@ -356,7 +356,7 @@ const FetchProfile = () => {
                   "Confirm"
                 )
               ) : (
-                <MdEdit />
+                <MdEdit className="text-gray-800 dark:text-slate-200" />
               )}
             </Button>
           </CardHeader>

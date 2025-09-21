@@ -246,10 +246,10 @@ const RegisterPage = () => {
                       setValue("speciality", value, { shouldValidate: true })
                     }
                   >
-                    <SelectTrigger className="cursor-pointer w-full">
+                    <SelectTrigger className="cursor-pointer w-full bg-muted">
                       <SelectValue placeholder="Select your speciality" />
                     </SelectTrigger>
-                    <SelectContent className="w-full cursor-pointer">
+                    <SelectContent className="w-full cursor-pointer ">
                       {specialities.map(({ value, label }) => (
                         <SelectItem
                           key={value}

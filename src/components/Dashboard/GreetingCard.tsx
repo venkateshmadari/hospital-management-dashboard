@@ -31,20 +31,19 @@ export default function GreetingCard() {
   };
 
   return (
-    <div className="relative z-10 w-full max-w-7xl max-h-64 rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row items-center md:items-stretch bg-white dark:bg-gray-900">
-      {/* Theme-aware gradient background */}
+    <div className="relative z-10 w-full max-w-7xl max-h-64 rounded-3xl shadow-xs overflow-hidden flex flex-col md:flex-row items-center md:items-stretch bg-white dark:bg-gray-900">
       <div
         className="absolute inset-0 z-0 rounded-3xl"
         style={{
           background:
-            "radial-gradient(125% 125% at 50% 10%, #f0f9ff 80%, #e6f7e6 100%)", // light mode colors
+            "radial-gradient(125% 125% at 50% 10%, #f0f9ff 80%, #e6f7e6 100%)",
         }}
       />
       <div
         className="absolute inset-0 z-0 rounded-3xl hidden dark:block"
         style={{
           background:
-            "radial-gradient(125% 125% at 50% 10%, #000000 40%, #072607 100%)", // dark mode colors
+            "radial-gradient(125% 125% at 50% 10%, #000000 40%, #072607 100%)",
         }}
       />
 

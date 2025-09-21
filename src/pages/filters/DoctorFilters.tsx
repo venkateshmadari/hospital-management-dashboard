@@ -33,7 +33,6 @@ const DoctorFilters: React.FC<DoctorFiltersProps> = ({
   placeholder,
 }) => {
   const location = useLocation();
-  console.log(location.pathname);
   return (
     <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-4">
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between flex-1">

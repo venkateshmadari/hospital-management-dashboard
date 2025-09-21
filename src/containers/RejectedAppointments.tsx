@@ -189,7 +189,6 @@ const RejectedAppointments = () => {
     setToggleModal((prev) => ({ ...prev, reassign: true }));
   };
 
-  console.log(rejectedAppointments);
   return (
     <div className="flex flex-col">
       <h1 className="mb-2">

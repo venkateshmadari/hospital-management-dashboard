@@ -15,7 +15,7 @@ import { useParams } from "react-router-dom";
 const SingleDoctorFetch = () => {
   const { id } = useParams();
   const { data, isLoading, isError } = useFetchData(`/admin/doctors/${id}`);
-  console.log(data);
+
   return (
     <div className="max-w-7xl w-auto mx-auto">
       <DoubleBreadcrumbs
